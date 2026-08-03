@@ -26,11 +26,29 @@ button{font:inherit}
 }
 #background{
     position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position:center;
+    z-index:0;
+
+    max-width:none;
+    max-height:none;
+
+    object-fit:fill;
+
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-drag:none;
+
+    transition:
+        filter 1.2s ease,
+        transform 1.2s ease;
+}
+
+@media (max-width:900px) and (orientation:landscape){
+
+    #scene{
+        width:100vw;
+        height:100dvh;
+    }
+
 }
 #sky{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;transition:filter 1.1s ease}
 #memory-aura{position:absolute;inset:-20%;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 42%,rgba(255,244,210,.18),rgba(255,229,182,.08) 28%,transparent 62%);filter:blur(28px);transform:scale(.92);transition:opacity 1.1s ease,transform 1.1s ease}
@@ -249,76 +267,99 @@ return state;
 
 function getLayout(){
 
-    const sw = scene.clientWidth;
-    const sh = scene.clientHeight;
+    const sceneWidth = scene.clientWidth;
+    const sceneHeight = scene.clientHeight;
 
-    const scale = Math.max(
-        sw / ORIGINAL_WIDTH,
-        sh / ORIGINAL_HEIGHT
+    const isMobileLandscape =
+        window.matchMedia(
+            "(max-width:900px) and (orientation:landscape)"
+        ).matches;
+
+    let scale = Math.max(
+        sceneWidth / ORIGINAL_WIDTH,
+        sceneHeight / ORIGINAL_HEIGHT
     );
 
-    const renderedWidth = ORIGINAL_WIDTH * scale;
-    const renderedHeight = ORIGINAL_HEIGHT * scale;
+    let offsetX;
+    let offsetY;
 
-    let offsetX = (sw - renderedWidth) / 2;
-    let offsetY = (sh - renderedHeight) / 2;
+    if(isMobileLandscape){
 
-    // Mobile adjustment
-    if(sw < 700){
-        offsetY += renderedHeight * 0.18;
+        // Zoom in on the tree and couple
+        scale *= 1.18;
+
+        const focusX = ORIGINAL_WIDTH * 0.38;
+        const focusY = ORIGINAL_HEIGHT * 0.76;
+
+        offsetX =
+            sceneWidth * 0.43 -
+            focusX * scale;
+
+        offsetY =
+            sceneHeight * 0.80 -
+            focusY * scale;
+
+    }else{
+
+        const renderedWidth =
+            ORIGINAL_WIDTH * scale;
+
+        const renderedHeight =
+            ORIGINAL_HEIGHT * scale;
+
+        offsetX =
+            (sceneWidth - renderedWidth) / 2;
+
+        offsetY =
+            (sceneHeight - renderedHeight) / 2;
+
     }
 
     return{
         scale,
         offsetX,
-        offsetY
+        offsetY,
+        renderedWidth: ORIGINAL_WIDTH * scale,
+        renderedHeight: ORIGINAL_HEIGHT * scale
     };
 
 }
 
 function positionPolaroids(){
 
-    const layout=getLayout();
+    const layout = getLayout();
 
-    const isMobile=
-        window.innerWidth<=700;
+    background.style.width =
+        `${layout.renderedWidth}px`;
+
+    background.style.height =
+        `${layout.renderedHeight}px`;
+
+    background.style.left =
+        `${layout.offsetX}px`;
+
+    background.style.top =
+        `${layout.offsetY}px`;
 
     for(const state of polaroids){
 
-        const m=state.memory;
+        const memory = state.memory;
+        const element = state.element;
 
-        const width=
-            m.width*
-            (isMobile
-                ?Math.max(layout.scale,.72)
-                :layout.scale);
+        element.style.left =
+            `${layout.offsetX +
+            memory.x * layout.scale}px`;
 
-        const height=
-            m.height*
-            (isMobile
-                ?Math.max(layout.scale,.72)
-                :layout.scale);
+        element.style.top =
+            `${layout.offsetY +
+            memory.y * layout.scale +
+            HANGING_OFFSET * layout.scale}px`;
 
-        const x=
-            layout.offsetX+
-            m.x*layout.scale;
+        element.style.width =
+            `${memory.width * layout.scale}px`;
 
-        const y=
-            layout.offsetY+
-            m.y*layout.scale+
-            HANGING_OFFSET*layout.scale;
-
-        state.element.style.left=
-            `${x-(width-m.width*layout.scale)/2}px`;
-
-        state.element.style.top=
-            `${y}px`;
-
-        state.element.style.width=
-            `${width}px`;
-
-        state.element.style.height=
-            `${height}px`;
+        element.style.height =
+            `${memory.height * layout.scale}px`;
 
     }
 
