@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Nuestras Memorias</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+}
+
+body{
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+button{
+    font:inherit;
+}
+
+#scene{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    background:#000;
+    isolation:isolate;
+}
+
+#background{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-drag:none;
+    transition:filter 1.25s cubic-bezier(.22,.61,.36,1),
+               transform 1.25s cubic-bezier(.22,.61,.36,1);
+}
+
+#sky{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    transition:filter 1.25s ease, opacity 1.25s ease;
+}
+
+#memory-aura{
+    position:absolute;
+    inset:-20%;
+    z-index:1;
+    pointer-events:none;
+    opacity:0;
+    background:
+        radial-gradient(circle at 50% 42%,
+            rgba(255,244,210,.22) 0%,
+            rgba(255,229,182,.10) 22%,
+            rgba(255,255,255,0) 58%);
+    filter:blur(28px);
+    transform:scale(.9);
+    transition:opacity 1.2s ease, transform 1.2s ease;
+}
+
+#memory-dim{
+    position:absolute;
+    inset:0;
+    z-index:3;
+    pointer-events:none;
+    opacity:0;
+    background:
+        radial-gradient(circle at center,
+            rgba(3,5,12,.18) 0%,
+            rgba(0,0,0,.50) 65%,
+            rgba(0,0,0,.72) 100%);
+    transition:opacity 1.1s ease;
+}
+
+#polaroid-layer{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+}
+
+.polaroid{
+    position:absolute;
+    width:42px;
+    height:57px;
+    border:0;
+    padding:0;
+    background:transparent;
+    cursor:pointer;
+    pointer-events:auto;
+    transform-origin:50% 0%;
+    will-change:transform;
+    appearance:none;
+    -webkit-appearance:none;
+}
+
+.polaroid-card{
+    position:absolute;
+    inset:0;
+    display:block;
+    overflow:hidden;
+    padding:3px 3px 10px;
+    border:1px solid rgba(255,248,229,.96);
+    background:#eee4cf;
+    box-shadow:
+        0 0 7px rgba(255,240,204,.50),
+        0 0 15px rgba(255,235,190,.16),
+        0 4px 8px rgba(0,0,0,.45);
+    transition:
+        box-shadow .4s ease,
+        filter .4s ease,
+        transform .4s ease,
+        opacity .35s ease;
+}
+
+.polaroid-media{
+    display:block;
+    width:100%;
+    height:100%;
+    max-width:100%;
+    max-height:100%;
+    object-fit:cover;
+    pointer-events:none;
+    background:#151515;
+}
+
+.polaroid:hover .polaroid-card,
+.polaroid:focus-visible .polaroid-card{
+    box-shadow:
+        0 0 12px rgba(255,244,220,.90),
+        0 0 24px rgba(255,231,181,.40),
+        0 6px 12px rgba(0,0,0,.52);
+    filter:brightness(1.06);
+    transform:translateY(-1px) scale(1.025);
+}
+
+.polaroid:focus-visible{
+    outline:none;
+}
+
+.polaroid.is-origin-hidden .polaroid-card{
+    opacity:0;
+}
+
+#memory-particles{
+    position:absolute;
+    inset:0;
+    z-index:4;
+    pointer-events:none;
+    overflow:hidden;
+    opacity:0;
+    transition:opacity .8s ease;
+}
+
+.memory-particle{
+    position:absolute;
+    width:3px;
+    height:3px;
+    border-radius:50%;
+    background:rgba(255,248,226,.92);
+    box-shadow:0 0 8px rgba(255,235,190,.75);
+    animation:memoryDust var(--duration) ease-in-out infinite;
+    animation-delay:var(--delay);
+}
+
+@keyframes memoryDust{
+    0%,100%{
+        transform:translate3d(0,10px,0) scale(.75);
+        opacity:0;
+    }
+    20%{
+        opacity:.7;
+    }
+    50%{
+        transform:translate3d(var(--drift),-22px,0) scale(1.2);
+        opacity:1;
+    }
+    80%{
+        opacity:.35;
+    }
+}
+
+#memory-stage{
+    position:absolute;
+    inset:0;
+    z-index:6;
+    pointer-events:none;
+}
+
+#memory-card{
+    position:absolute;
+    left:0;
+    top:0;
+    display:none;
+    width:42px;
+    height:57px;
+    border:1px solid rgba(255,248,229,.96);
+    padding:6px 6px 18px;
+    background:#eee4cf;
+    box-shadow:
+        0 0 18px rgba(255,243,215,.62),
+        0 0 50px rgba(255,228,177,.22),
+        0 20px 50px rgba(0,0,0,.55);
+    transform-origin:center;
+    will-change:transform,width,height,left,top;
+    pointer-events:auto;
+    cursor:zoom-out;
+    overflow:hidden;
+}
+
+#memory-card.is-active{
+    display:block;
+}
+
+#memory-card img,
+#memory-card video{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:#111;
+}
+
+#memory-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:7;
+    display:none;
+    width:42px;
+    height:42px;
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:50%;
+    color:#fff;
+    background:rgba(8,10,18,.42);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    cursor:pointer;
+    opacity:0;
+    transform:scale(.85);
+    transition:opacity .35s ease, transform .35s ease, background .25s ease;
+}
+
+#memory-close:hover{
+    background:rgba(20,22,32,.68);
+}
+
+#memory-close.is-visible{
+    display:block;
+    opacity:1;
+    transform:scale(1);
+}
+
+body.memory-open #background{
+    filter:blur(5px) brightness(.58) saturate(.90);
+    transform:scale(1.012);
+}
+
+body.memory-open #sky{
+    filter:brightness(1.45);
+}
+
+body.memory-open #memory-aura{
+    opacity:1;
+    transform:scale(1);
+}
+
+body.memory-open #memory-dim{
+    opacity:1;
+}
+
+body.memory-open #memory-particles{
+    opacity:1;
+}
+
+@media (max-width:700px){
+    #memory-close{
+        top:max(12px,env(safe-area-inset-top));
+        right:12px;
+    }
+}
+
+@media (prefers-reduced-motion:reduce){
+    *,
+    *::before,
+    *::after{
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
+    }
+
+    .polaroid{
+        transform:none !important;
+    }
+}
+</style>
+</head>
+
+<body>
+<main id="scene">
+    <img id="background" src="background-clean.jpg" alt="" draggable="false">
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <div id="memory-aura" aria-hidden="true"></div>
+    <div id="polaroid-layer" aria-label="Our memories"></div>
+    <div id="memory-dim" aria-hidden="true"></div>
+    <div id="memory-particles" aria-hidden="true"></div>
+
+    <div id="memory-stage" aria-live="polite">
+        <div id="memory-card" role="dialog" aria-modal="true" aria-label="Memory"></div>
+        <button id="memory-close" type="button" aria-label="Close memory">✕</button>
+    </div>
+</main>
+
+<script>
+"use strict";
+
+const ORIGINAL_WIDTH=1448;
+const ORIGINAL_HEIGHT=1086;
+
+const scene=document.querySelector("#scene");
+const background=document.querySelector("#background");
+const layer=document.querySelector("#polaroid-layer");
+const memoryCard=document.querySelector("#memory-card");
+const memoryClose=document.querySelector("#memory-close");
+const memoryDim=document.querySelector("#memory-dim");
+const particlesLayer=document.querySelector("#memory-particles");
+
+const memories=[
+    {file:"memory-1.jpg",x:64,y:630,width:42,height:57},
+    {file:"memory-2.jpeg",x:126,y:586,width:42,height:57},
+    {file:"memory-3.jpeg",x:268,y:642,width:42,height:57},
+    {file:"memory-4.jpeg",x:323,y:611,width:42,height:57},
+    {file:"memory-5.jpeg",x:366,y:514,width:42,height:57},
+    {file:"memory-6.jpeg",x:445,y:559,width:42,height:57},
+    {file:"memory-7.jpeg",x:525,y:588,width:42,height:57},
+    {file:"memory-8.JPG",x:584,y:548,width:42,height:57}
+];
+
+let activeState=null;
+let isTransitioning=false;
+
+const polaroids=memories.map((memory,index)=>{
+    const button=document.createElement("button");
+    button.className="polaroid";
+    button.type="button";
+    button.setAttribute("aria-label",`Open memory ${index+1}`);
+
+    const card=document.createElement("span");
+    card.className="polaroid-card";
+
+    const image=document.createElement("img");
+    image.className="polaroid-media";
+    image.src=memory.file;
+    image.alt="";
+    image.draggable=false;
+
+    card.appendChild(image);
+    button.appendChild(card);
+    layer.appendChild(button);
+
+    const state={
+        element:button,
+        memory,
+        angle:(Math.random()-.5)*.9,
+        velocity:0,
+        phase:Math.random()*Math.PI*2,
+        speed:.00014+Math.random()*.00008,
+        strength:.00035+Math.random()*.00035
+    };
+
+    button.addEventListener("mouseenter",()=>{
+        state.velocity+=Math.random()>.5?.035:-.035;
+    });
+
+    button.addEventListener("click",()=>{
+        if(!isTransitioning&&!activeState){
+            openMemory(state);
+        }
+    });
+
+    return state;
+});
+
+function getLayout(){
+    const sw=scene.clientWidth;
+    const sh=scene.clientHeight;
+    const scale=Math.max(sw/ORIGINAL_WIDTH,sh/ORIGINAL_HEIGHT);
+
+    return{
+        scale,
+        offsetX:(sw-ORIGINAL_WIDTH*scale)/2,
+        offsetY:(sh-ORIGINAL_HEIGHT*scale)/2
+    };
+}
+
+function positionPolaroids(){
+    const layout=getLayout();
+
+    for(const state of polaroids){
+        const m=state.memory;
+        const e=state.element;
+
+        e.style.left=`${layout.offsetX+m.x*layout.scale}px`;
+        e.style.top=`${layout.offsetY+m.y*layout.scale}px`;
+        e.style.width=`${m.width*layout.scale}px`;
+        e.style.height=`${m.height*layout.scale}px`;
+    }
+}
+
+function animatePolaroids(time){
+    for(const state of polaroids){
+        if(state===activeState){
+            continue;
+        }
+
+        state.velocity+=Math.sin(time*state.speed+state.phase)*state.strength;
+        state.velocity+=-state.angle*.0045;
+        state.velocity*=.985;
+        state.angle+=state.velocity;
+        state.angle=Math.max(-1.35,Math.min(1.35,state.angle));
+
+        const lift=Math.sin(time*(state.speed*.72)+state.phase)*.35;
+
+        state.element.style.transform=
+            `translateY(${lift.toFixed(2)}px) rotate(${state.angle.toFixed(3)}deg)`;
+    }
+
+    requestAnimationFrame(animatePolaroids);
+}
+
+function buildParticles(){
+    particlesLayer.replaceChildren();
+
+    for(let i=0;i<34;i+=1){
+        const particle=document.createElement("span");
+        particle.className="memory-particle";
+        particle.style.left=`${10+Math.random()*80}%`;
+        particle.style.top=`${18+Math.random()*68}%`;
+        particle.style.setProperty("--duration",`${4.5+Math.random()*5}s`);
+        particle.style.setProperty("--delay",`${-Math.random()*7}s`);
+        particle.style.setProperty("--drift",`${-18+Math.random()*36}px`);
+        particle.style.opacity=(.25+Math.random()*.65).toFixed(2);
+        particlesLayer.appendChild(particle);
+    }
+}
+
+function getTargetRect(){
+    const maxWidth=Math.min(window.innerWidth*.78,720);
+    const maxHeight=Math.min(window.innerHeight*.76,760);
+
+    const width=Math.min(maxWidth,maxHeight*.78);
+    const height=Math.min(maxHeight,width*1.28);
+
+    return{
+        left:(window.innerWidth-width)/2,
+        top:(window.innerHeight-height)/2,
+        width,
+        height
+    };
+}
+
+function setCardRect(rect){
+    memoryCard.style.left=`${rect.left}px`;
+    memoryCard.style.top=`${rect.top}px`;
+    memoryCard.style.width=`${rect.width}px`;
+    memoryCard.style.height=`${rect.height}px`;
+}
+
+function openMemory(state){
+    isTransitioning=true;
+    activeState=state;
+
+    const origin=state.element.getBoundingClientRect();
+    const target=getTargetRect();
+
+    memoryCard.replaceChildren();
+
+    const image=document.createElement("img");
+    image.src=state.memory.file;
+    image.alt="Memory";
+    image.draggable=false;
+    memoryCard.appendChild(image);
+
+    setCardRect(origin);
+    memoryCard.classList.add("is-active");
+    state.element.classList.add("is-origin-hidden");
+
+    buildParticles();
+
+    requestAnimationFrame(()=>{
+        document.body.classList.add("memory-open");
+
+        memoryCard.animate(
+            [
+                {
+                    left:`${origin.left}px`,
+                    top:`${origin.top}px`,
+                    width:`${origin.width}px`,
+                    height:`${origin.height}px`,
+                    transform:`rotate(${state.angle}deg) scale(1)`,
+                    borderRadius:"0px"
+                },
+                {
+                    offset:.45,
+                    transform:"rotate(-1.2deg) scale(1.03)",
+                    borderRadius:"2px"
+                },
+                {
+                    left:`${target.left}px`,
+                    top:`${target.top}px`,
+                    width:`${target.width}px`,
+                    height:`${target.height}px`,
+                    transform:"rotate(0deg) scale(1)",
+                    borderRadius:"3px"
+                }
+            ],
+            {
+                duration:1350,
+                easing:"cubic-bezier(.18,.84,.25,1)",
+                fill:"forwards"
+            }
+        ).finished.then(()=>{
+            setCardRect(target);
+            memoryCard.style.transform="none";
+            memoryClose.classList.add("is-visible");
+            isTransitioning=false;
+        });
+    });
+}
+
+function closeMemory(){
+    if(!activeState||isTransitioning){
+        return;
+    }
+
+    isTransitioning=true;
+    memoryClose.classList.remove("is-visible");
+
+    const current=memoryCard.getBoundingClientRect();
+    const origin=activeState.element.getBoundingClientRect();
+
+    document.body.classList.remove("memory-open");
+
+    memoryCard.animate(
+        [
+            {
+                left:`${current.left}px`,
+                top:`${current.top}px`,
+                width:`${current.width}px`,
+                height:`${current.height}px`,
+                transform:"rotate(0deg) scale(1)",
+                opacity:1
+            },
+            {
+                offset:.55,
+                transform:"rotate(1deg) scale(.98)",
+                opacity:1
+            },
+            {
+                left:`${origin.left}px`,
+                top:`${origin.top}px`,
+                width:`${origin.width}px`,
+                height:`${origin.height}px`,
+                transform:`rotate(${activeState.angle}deg) scale(1)`,
+                opacity:.95
+            }
+        ],
+        {
+            duration:1200,
+            easing:"cubic-bezier(.22,.61,.36,1)",
+            fill:"forwards"
+        }
+    ).finished.then(()=>{
+        activeState.element.classList.remove("is-origin-hidden");
+        memoryCard.classList.remove("is-active");
+        memoryCard.replaceChildren();
+        memoryCard.removeAttribute("style");
+        activeState=null;
+        isTransitioning=false;
+    });
+}
+
+memoryClose.addEventListener("click",closeMemory);
+memoryDim.addEventListener("click",closeMemory);
+memoryCard.addEventListener("click",closeMemory);
+
+window.addEventListener("keydown",(event)=>{
+    if(event.key==="Escape"){
+        closeMemory();
+    }
+});
+
+background.addEventListener("load",positionPolaroids);
+window.addEventListener("resize",()=>{
+    positionPolaroids();
+
+    if(activeState&&!isTransitioning){
+        setCardRect(getTargetRect());
+    }
+});
+
+if(background.complete){
+    positionPolaroids();
+}
+
+requestAnimationFrame(animatePolaroids);
+
+const canvas=document.querySelector("#sky");
+const ctx=canvas.getContext("2d",{alpha:true});
+
+let width=0;
+let height=0;
+let dpr=1;
+let last=performance.now();
+let nextMeteor=8+Math.random()*12;
+
+const stars=[];
+const meteors=[];
+
+function rand(a,b){
+    return Math.random()*(b-a)+a;
+}
+
+class Star{
+    constructor(){
+        this.x=rand(0,width);
+        this.y=rand(0,height*.72);
+        this.r=rand(.3,1.15);
+        this.base=rand(.03,.2);
+        this.range=rand(.04,.16);
+        this.phase=rand(0,Math.PI*2);
+        this.speed=rand(.16,.65);
+    }
+
+    draw(t){
+        const memoryBoost=document.body.classList.contains("memory-open")?1.7:1;
+        const sparkle=document.body.classList.contains("memory-open")
+            ? Math.max(0,Math.sin(t*2.8+this.phase))*.12
+            : 0;
+
+        const a=Math.max(
+            0,
+            (this.base+Math.sin(t*this.speed+this.phase)*this.range+sparkle)*memoryBoost
+        );
+
+        const radius=document.body.classList.contains("memory-open")
+            ? this.r*(1+Math.max(0,Math.sin(t*2.2+this.phase))*.35)
+            : this.r;
+
+        ctx.beginPath();
+        ctx.fillStyle=`rgba(255,255,255,${Math.min(a,.95)})`;
+        ctx.arc(this.x,this.y,radius,0,Math.PI*2);
+        ctx.fill();
+    }
+}
+
+class Meteor{
+    constructor(){
+        this.x=rand(width*.1,width*.8);
+        this.y=rand(height*.04,height*.28);
+        this.angle=Math.PI/4+rand(-.12,.12);
+        this.speed=rand(620,900);
+        this.length=rand(90,175);
+        this.age=0;
+        this.life=rand(.85,1.2);
+    }
+
+    update(dt){
+        this.age+=dt;
+        this.x+=Math.cos(this.angle)*this.speed*dt;
+        this.y+=Math.sin(this.angle)*this.speed*dt;
+    }
+
+    draw(){
+        const a=Math.max(0,1-this.age/this.life);
+
+        ctx.save();
+        ctx.globalAlpha=a*.7;
+        ctx.lineWidth=1.5;
+        ctx.strokeStyle="rgba(255,255,255,.9)";
+        ctx.shadowBlur=10;
+        ctx.shadowColor="rgba(255,255,255,.75)";
+        ctx.beginPath();
+        ctx.moveTo(this.x,this.y);
+        ctx.lineTo(
+            this.x-Math.cos(this.angle)*this.length,
+            this.y-Math.sin(this.angle)*this.length
+        );
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    get done(){
+        return this.age>=this.life;
+    }
+}
+
+function buildStars(){
+    stars.length=0;
+
+    const count=Math.min(
+        400,
+        Math.max(170,Math.floor(width*height/3400))
+    );
+
+    for(let i=0;i<count;i+=1){
+        stars.push(new Star());
+    }
+}
+
+function resizeCanvas(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    width=window.innerWidth;
+    height=window.innerHeight;
+
+    canvas.width=Math.round(width*dpr);
+    canvas.height=Math.round(height*dpr);
+    canvas.style.width=`${width}px`;
+    canvas.style.height=`${height}px`;
+
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    buildStars();
+}
+
+function animateSky(now){
+    const dt=Math.min((now-last)/1000,.05);
+    const t=now/1000;
+    last=now;
+
+    ctx.clearRect(0,0,width,height);
+
+    for(const star of stars){
+        star.draw(t);
+    }
+
+    nextMeteor-=dt;
+
+    if(nextMeteor<=0&&meteors.length<2){
+        meteors.push(new Meteor());
+        nextMeteor=8+Math.random()*12;
+    }
+
+    for(let i=meteors.length-1;i>=0;i-=1){
+        const meteor=meteors[i];
+        meteor.update(dt);
+        meteor.draw();
+
+        if(meteor.done){
+            meteors.splice(i,1);
+        }
+    }
+
+    requestAnimationFrame(animateSky);
+}
+
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+requestAnimationFrame(animateSky);
+</script>
+</body>
+</html>
