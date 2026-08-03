@@ -9,8 +9,38 @@
 html,body{width:100%;height:100%;overflow:hidden;background:#000}
 body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 button{font:inherit}
-#scene{position:relative;width:100vw;height:100vh;overflow:hidden;background:#000;isolation:isolate}
-#background{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none;-webkit-user-drag:none;transition:filter 1.2s ease,transform 1.2s ease}
+#scene{
+    position:fixed;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#000;
+}
+#background{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:contain;      /* <-- was cover */
+
+    object-position:center bottom;
+
+    pointer-events:none;
+    user-select:none;
+    -webkit-user-drag:none;
+
+    z-index:0;
+}
 #sky{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;transition:filter 1.1s ease}
 #memory-aura{position:absolute;inset:-20%;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 42%,rgba(255,244,210,.18),rgba(255,229,182,.08) 28%,transparent 62%);filter:blur(28px);transform:scale(.92);transition:opacity 1.1s ease,transform 1.1s ease}
 #polaroid-layer{position:absolute;inset:0;z-index:3;pointer-events:none}
@@ -228,34 +258,21 @@ return state;
 
 function getLayout(){
 
-    const sceneWidth=scene.clientWidth;
-    const sceneHeight=scene.clientHeight;
+    const sw = scene.clientWidth;
+    const sh = scene.clientHeight;
 
-    const isMobile=
-        window.innerWidth<=700;
+    const scale = Math.min(
+        sw / ORIGINAL_WIDTH,
+        sh / ORIGINAL_HEIGHT
+    );
 
-    const scale=isMobile
-        ?Math.min(
-            sceneWidth/ORIGINAL_WIDTH,
-            sceneHeight/ORIGINAL_HEIGHT
-        )
-        :Math.max(
-            sceneWidth/ORIGINAL_WIDTH,
-            sceneHeight/ORIGINAL_HEIGHT
-        );
-
-    const renderedWidth=
-        ORIGINAL_WIDTH*scale;
-
-    const renderedHeight=
-        ORIGINAL_HEIGHT*scale;
+    const renderedWidth = ORIGINAL_WIDTH * scale;
+    const renderedHeight = ORIGINAL_HEIGHT * scale;
 
     return{
         scale,
-        offsetX:(sceneWidth-renderedWidth)/2,
-        offsetY:isMobile
-            ?sceneHeight-renderedHeight
-            :(sceneHeight-renderedHeight)/2
+        offsetX:(sw-renderedWidth)/2,
+        offsetY:(sh-renderedHeight)/2
     };
 
 }
