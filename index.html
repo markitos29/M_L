@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Nuestras Memorias</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#scene{position:relative;width:100vw;height:100vh;overflow:hidden;background:#000}
+#background{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none;-webkit-user-drag:none}
+#sky{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
+#polaroid-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
+.polaroid{position:absolute;width:42px;height:57px;border:0;padding:0;background:transparent;cursor:pointer;pointer-events:auto;transform-origin:50% 0%;will-change:transform}
+.polaroid-card{position:absolute;inset:0;display:block;overflow:hidden;padding:3px 3px 10px;border:1px solid rgba(255,248,229,.95);background:#eee4cf;box-shadow:0 0 6px rgba(255,238,195,.45),0 4px 8px rgba(0,0,0,.45)}
+.polaroid-media{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:cover;pointer-events:none}
+.polaroid:hover .polaroid-card{box-shadow:0 0 13px rgba(255,240,200,.8),0 5px 11px rgba(0,0,0,.55)}
+</style>
+</head>
+<body>
+<main id="scene">
+<img id="background" src="background-clean.jpg" alt="" draggable="false">
+<canvas id="sky"></canvas>
+<div id="polaroid-layer"></div>
+</main>
+<script>
+"use strict";
+
+const ORIGINAL_WIDTH=1448;
+const ORIGINAL_HEIGHT=1086;
+const scene=document.querySelector("#scene");
+const background=document.querySelector("#background");
+const layer=document.querySelector("#polaroid-layer");
+
+const memories=[
+{file:"memory-1.jpg",x:64,y:630,width:42,height:57},
+{file:"memory-2.jpeg",x:126,y:586,width:42,height:57},
+{file:"memory-3.jpeg",x:268,y:642,width:42,height:57},
+{file:"memory-4.jpeg",x:323,y:611,width:42,height:57},
+{file:"memory-5.jpeg",x:366,y:514,width:42,height:57},
+{file:"memory-6.jpeg",x:445,y:559,width:42,height:57},
+{file:"memory-7.jpeg",x:525,y:588,width:42,height:57},
+{file:"memory-8.JPG",x:584,y:548,width:42,height:57}
+];
+
+const polaroids=memories.map((memory,index)=>{
+  const button=document.createElement("button");
+  button.className="polaroid";
+  button.type="button";
+  button.setAttribute("aria-label",`Open memory ${index+1}`);
+
+  const card=document.createElement("span");
+  card.className="polaroid-card";
+
+  const image=document.createElement("img");
+  image.className="polaroid-media";
+  image.src=memory.file;
+  image.alt="";
+  image.draggable=false;
+
+  card.appendChild(image);
+  button.appendChild(card);
+  layer.appendChild(button);
+
+  const state={
+    element:button,
+    memory,
+    angle:(Math.random()-.5)*1.2,
+    velocity:0,
+    phase:Math.random()*Math.PI*2,
+    speed:.00018+Math.random()*.0001,
+    strength:.0007+Math.random()*.0006
+  };
+
+  button.addEventListener("mouseenter",()=>{
+    state.velocity+=Math.random()>.5?.08:-.08;
+  });
+
+  button.addEventListener("click",()=>{
+    state.velocity+=Math.random()>.5?.55:-.55;
+  });
+
+  return state;
+});
+
+function getLayout(){
+  const sw=scene.clientWidth;
+  const sh=scene.clientHeight;
+  const scale=Math.max(sw/ORIGINAL_WIDTH,sh/ORIGINAL_HEIGHT);
+  return{
+    scale,
+    offsetX:(sw-ORIGINAL_WIDTH*scale)/2,
+    offsetY:(sh-ORIGINAL_HEIGHT*scale)/2
+  };
+}
+
+function positionPolaroids(){
+  const layout=getLayout();
+  for(const state of polaroids){
+    const m=state.memory;
+    const e=state.element;
+    e.style.left=`${layout.offsetX+m.x*layout.scale}px`;
+    e.style.top=`${layout.offsetY+m.y*layout.scale}px`;
+    e.style.width=`${m.width*layout.scale}px`;
+    e.style.height=`${m.height*layout.scale}px`;
+  }
+}
+
+function animatePolaroids(time){
+  for(const state of polaroids){
+    state.velocity+=Math.sin(time*state.speed+state.phase)*state.strength;
+    state.velocity+=-state.angle*.004;
+    state.velocity*=.983;
+    state.angle+=state.velocity;
+    state.angle=Math.max(-2.1,Math.min(2.1,state.angle));
+    state.element.style.transform=`rotate(${state.angle.toFixed(3)}deg)`;
+  }
+  requestAnimationFrame(animatePolaroids);
+}
+
+background.addEventListener("load",positionPolaroids);
+window.addEventListener("resize",positionPolaroids);
+if(background.complete) positionPolaroids();
+requestAnimationFrame(animatePolaroids);
+
+const canvas=document.querySelector("#sky");
+const ctx=canvas.getContext("2d",{alpha:true});
+let width=0,height=0,dpr=1,last=performance.now(),nextMeteor=8+Math.random()*12;
+const stars=[],meteors=[];
+
+function rand(a,b){return Math.random()*(b-a)+a}
+
+class Star{
+  constructor(){
+    this.x=rand(0,width);
+    this.y=rand(0,height*.72);
+    this.r=rand(.3,1.15);
+    this.base=rand(.03,.2);
+    this.range=rand(.04,.16);
+    this.phase=rand(0,Math.PI*2);
+    this.speed=rand(.16,.65);
+  }
+  draw(t){
+    const a=Math.max(0,this.base+Math.sin(t*this.speed+this.phase)*this.range);
+    ctx.beginPath();
+    ctx.fillStyle=`rgba(255,255,255,${a})`;
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.fill();
+  }
+}
+
+class Meteor{
+  constructor(){
+    this.x=rand(width*.1,width*.8);
+    this.y=rand(height*.04,height*.28);
+    this.angle=Math.PI/4+rand(-.12,.12);
+    this.speed=rand(620,900);
+    this.length=rand(90,175);
+    this.age=0;
+    this.life=rand(.85,1.2);
+  }
+  update(dt){
+    this.age+=dt;
+    this.x+=Math.cos(this.angle)*this.speed*dt;
+    this.y+=Math.sin(this.angle)*this.speed*dt;
+  }
+  draw(){
+    const a=Math.max(0,1-this.age/this.life);
+    ctx.save();
+    ctx.globalAlpha=a*.7;
+    ctx.lineWidth=1.5;
+    ctx.strokeStyle="rgba(255,255,255,.9)";
+    ctx.shadowBlur=10;
+    ctx.shadowColor="rgba(255,255,255,.75)";
+    ctx.beginPath();
+    ctx.moveTo(this.x,this.y);
+    ctx.lineTo(this.x-Math.cos(this.angle)*this.length,this.y-Math.sin(this.angle)*this.length);
+    ctx.stroke();
+    ctx.restore();
+  }
+  get done(){return this.age>=this.life}
+}
+
+function buildStars(){
+  stars.length=0;
+  const count=Math.min(400,Math.max(170,Math.floor(width*height/3400)));
+  for(let i=0;i<count;i++) stars.push(new Star());
+}
+
+function resizeCanvas(){
+  dpr=Math.min(window.devicePixelRatio||1,2);
+  width=window.innerWidth;
+  height=window.innerHeight;
+  canvas.width=Math.round(width*dpr);
+  canvas.height=Math.round(height*dpr);
+  canvas.style.width=`${width}px`;
+  canvas.style.height=`${height}px`;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  buildStars();
+}
+
+function animateSky(now){
+  const dt=Math.min((now-last)/1000,.05);
+  const t=now/1000;
+  last=now;
+  ctx.clearRect(0,0,width,height);
+
+  for(const star of stars) star.draw(t);
+
+  nextMeteor-=dt;
+  if(nextMeteor<=0&&meteors.length<2){
+    meteors.push(new Meteor());
+    nextMeteor=8+Math.random()*12;
+  }
+
+  for(let i=meteors.length-1;i>=0;i--){
+    const meteor=meteors[i];
+    meteor.update(dt);
+    meteor.draw();
+    if(meteor.done) meteors.splice(i,1);
+  }
+
+  requestAnimationFrame(animateSky);
+}
+
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
+requestAnimationFrame(animateSky);
+</script>
+</body>
+</html>
