@@ -15,31 +15,18 @@
 }
 
 body{
-    height:100vh;
-    overflow:hidden;
-    background:
-    radial-gradient(circle at 70% 20%, rgba(90,80,180,.25), transparent 35%),
-    radial-gradient(circle at 20% 80%, rgba(255,80,120,.12), transparent 30%),
-    linear-gradient(#02010b,#05051a 60%,#000);
-}
 
-
-/* Nebula */
-
-body::before{
-
-content:"";
-
-position:absolute;
-
-width:100%;
-height:100%;
+height:100vh;
+overflow:hidden;
 
 background:
-radial-gradient(circle at 30% 40%,rgba(255,0,120,.08),transparent 30%),
-radial-gradient(circle at 80% 70%,rgba(0,120,255,.08),transparent 35%);
-
-filter:blur(50px);
+radial-gradient(circle at 70% 15%, rgba(50,50,90,.18), transparent 35%),
+linear-gradient(
+180deg,
+#010107 0%,
+#030314 50%,
+#000005 100%
+);
 
 }
 
@@ -50,27 +37,35 @@ filter:blur(50px);
 
 position:absolute;
 
-top:70px;
-right:100px;
+top:80px;
+right:110px;
 
-width:150px;
-height:150px;
+width:135px;
+height:135px;
 
 border-radius:50%;
 
 background:
-radial-gradient(circle at 35% 35%,#fff,#eee 45%,#ccc);
+
+radial-gradient(
+circle at 35% 35%,
+#d8d8d8,
+#999 60%,
+#666
+);
+
 
 box-shadow:
 
-0 0 30px white,
-0 0 80px rgba(255,255,255,.6),
-0 0 150px rgba(255,255,255,.25);
+0 0 25px rgba(220,220,255,.35),
+0 0 70px rgba(150,150,220,.15);
+
+opacity:.85;
 
 }
 
 
-/* Moon craters */
+/* Moon details */
 
 .moon::before{
 
@@ -78,22 +73,23 @@ content:"";
 
 position:absolute;
 
-width:25px;
-height:25px;
+width:20px;
+height:20px;
 
-background:#bbb;
+background:#777;
 
 border-radius:50%;
 
-top:40px;
-left:35px;
+top:35px;
+left:30px;
+
+opacity:.4;
+
 
 box-shadow:
 
-45px 30px 0 8px #c4c4c4,
-25px 80px 0 5px #aaa;
-
-opacity:.35;
+45px 20px 0 6px #777,
+30px 70px 0 4px #555;
 
 }
 
@@ -109,70 +105,113 @@ background:white;
 
 border-radius:50%;
 
-}
+opacity:.4;
 
+}
 
 
 .star.glow{
 
-box-shadow:
-0 0 5px white,
-0 0 12px white;
+opacity:.9;
 
-animation:twinkle 3s infinite;
+box-shadow:
+
+0 0 5px white,
+0 0 10px white;
+
+animation:twinkle 4s infinite;
 
 }
+
 
 
 @keyframes twinkle{
 
 0%,100%{
-
 opacity:.3;
-
 }
 
 50%{
-
 opacity:1;
-
 }
 
 }
 
 
 
-/* Shooting Stars */
+/* Real meteor */
 
 .shooting{
 
+
 position:absolute;
+
+width:120px;
 
 height:2px;
 
-width:180px;
 
 background:
-linear-gradient(90deg,
-white,
-transparent);
 
-transform:rotate(-35deg);
+linear-gradient(
+90deg,
+rgba(255,255,255,0),
+white
+);
 
-animation:shoot 6s linear infinite;
+
+filter:
+drop-shadow(0 0 8px white);
+
+
+transform:
+rotate(-45deg);
+
+
+animation:
+meteor 5s linear infinite;
+
 
 opacity:0;
+
 
 }
 
 
-@keyframes shoot{
+
+.shooting::after{
+
+content:"";
+
+position:absolute;
+
+right:0;
+
+top:-2px;
+
+width:6px;
+
+height:6px;
+
+background:white;
+
+border-radius:50%;
+
+box-shadow:
+0 0 15px white;
+
+}
+
+
+
+@keyframes meteor{
 
 
 0%{
 
-left:-300px;
-top:100px;
+top:-20%;
+left:110%;
+
 opacity:0;
 
 }
@@ -185,10 +224,10 @@ opacity:1;
 }
 
 
-30%{
+35%{
 
-left:120vw;
-top:400px;
+top:45%;
+left:55%;
 
 opacity:0;
 
@@ -201,7 +240,6 @@ opacity:0;
 
 }
 
-
 }
 
 
@@ -213,21 +251,29 @@ opacity:0;
 
 position:absolute;
 
-width:15px;
+width:10px;
 
-height:20px;
+height:14px;
 
-background:#9b0035;
+background:#750027;
 
-border-radius:100% 0 100% 0;
+border-radius:
+100% 0 100% 0;
 
-opacity:.8;
 
-filter:drop-shadow(0 0 5px crimson);
+opacity:.55;
 
-animation:fall linear infinite;
+
+filter:
+drop-shadow(0 0 3px #8b0030);
+
+
+animation:
+fall linear infinite;
+
 
 }
+
 
 
 @keyframes fall{
@@ -246,13 +292,14 @@ rotate(0deg);
 
 transform:
 translateY(110vh)
-translateX(80px)
-rotate(720deg);
+translateX(40px)
+rotate(450deg);
 
 }
 
 
 }
+
 
 
 </style>
@@ -269,9 +316,9 @@ rotate(720deg);
 <script>
 
 
-// Create realistic stars
+// Stars
 
-for(let i=0;i<350;i++){
+for(let i=0;i<250;i++){
 
 
 let star=document.createElement("div");
@@ -279,24 +326,24 @@ let star=document.createElement("div");
 star.className="star";
 
 
-let size=Math.random()*2.5;
+let size=Math.random()*2+0.5;
 
 
 star.style.width=size+"px";
-
 star.style.height=size+"px";
 
 
 star.style.left=Math.random()*100+"vw";
-
 star.style.top=Math.random()*100+"vh";
 
 
-if(Math.random()>.75){
+
+if(Math.random()>.8){
 
 star.classList.add("glow");
 
-star.style.animationDelay=Math.random()*4+"s";
+star.style.animationDelay=
+Math.random()*5+"s";
 
 }
 
@@ -308,40 +355,49 @@ document.body.appendChild(star);
 
 
 
-// Shooting stars
+// Meteors
 
-function shootingStar(){
+function createMeteor(){
 
-let star=document.createElement("div");
 
-star.className="shooting";
+let meteor=document.createElement("div");
 
-star.style.top=Math.random()*40+"vh";
+meteor.className="shooting";
 
-star.style.animationDuration=
+
+meteor.style.top=
+Math.random()*30+"vh";
+
+
+meteor.style.left=
+Math.random()*80+"vw";
+
+
+meteor.style.animationDuration=
 (Math.random()*3+4)+"s";
 
 
-document.body.appendChild(star);
+document.body.appendChild(meteor);
+
 
 
 setTimeout(()=>{
 
-star.remove();
+meteor.remove();
 
-},6000);
+},5000);
 
 
 }
 
 
-setInterval(shootingStar,3500);
+setInterval(createMeteor,4500);
 
 
 
-// Rose petals
+// Less rose petals
 
-for(let i=0;i<50;i++){
+for(let i=0;i<15;i++){
 
 
 let petal=document.createElement("div");
@@ -349,19 +405,16 @@ let petal=document.createElement("div");
 petal.className="petal";
 
 
-petal.style.left=Math.random()*100+"vw";
+petal.style.left=
+Math.random()*100+"vw";
 
 
 petal.style.animationDuration=
-(Math.random()*8+8)+"s";
+(Math.random()*10+12)+"s";
 
 
 petal.style.animationDelay=
-Math.random()*10+"s";
-
-
-petal.style.transform=
-`rotate(${Math.random()*360}deg)`;
+Math.random()*15+"s";
 
 
 document.body.appendChild(petal);
