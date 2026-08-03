@@ -73,6 +73,23 @@ body.memory-open #memory-aura{opacity:1;transform:scale(1)}
 #memory-caption.show{
     opacity:1;
 }
+    @media (max-width:700px){
+
+    #scene{
+        height:100dvh;
+    }
+
+    #background{
+        object-fit:contain;
+        object-position:center bottom;
+    }
+
+    .polaroid{
+        min-width:30px;
+        min-height:40px;
+    }
+
+}
 </style>
 </head>
 <body>
@@ -210,22 +227,85 @@ return state;
 });
 
 function getLayout(){
-const sw=scene.clientWidth;
-const sh=scene.clientHeight;
-const scale=Math.max(sw/ORIGINAL_WIDTH,sh/ORIGINAL_HEIGHT);
-return{scale,offsetX:(sw-ORIGINAL_WIDTH*scale)/2,offsetY:(sh-ORIGINAL_HEIGHT*scale)/2};
+
+    const sceneWidth=scene.clientWidth;
+    const sceneHeight=scene.clientHeight;
+
+    const isMobile=
+        window.innerWidth<=700;
+
+    const scale=isMobile
+        ?Math.min(
+            sceneWidth/ORIGINAL_WIDTH,
+            sceneHeight/ORIGINAL_HEIGHT
+        )
+        :Math.max(
+            sceneWidth/ORIGINAL_WIDTH,
+            sceneHeight/ORIGINAL_HEIGHT
+        );
+
+    const renderedWidth=
+        ORIGINAL_WIDTH*scale;
+
+    const renderedHeight=
+        ORIGINAL_HEIGHT*scale;
+
+    return{
+        scale,
+        offsetX:(sceneWidth-renderedWidth)/2,
+        offsetY:isMobile
+            ?sceneHeight-renderedHeight
+            :(sceneHeight-renderedHeight)/2
+    };
+
 }
 
 function positionPolaroids(){
-const layout=getLayout();
-for(const state of polaroids){
-const m=state.memory;
-const e=state.element;
-e.style.left=`${layout.offsetX+m.x*layout.scale}px`;
-e.style.top=`${layout.offsetY+m.y*layout.scale+HANGING_OFFSET*layout.scale}px`;
-e.style.width=`${m.width*layout.scale}px`;
-e.style.height=`${m.height*layout.scale}px`;
-}
+
+    const layout=getLayout();
+
+    const isMobile=
+        window.innerWidth<=700;
+
+    for(const state of polaroids){
+
+        const m=state.memory;
+
+        const width=
+            m.width*
+            (isMobile
+                ?Math.max(layout.scale,.72)
+                :layout.scale);
+
+        const height=
+            m.height*
+            (isMobile
+                ?Math.max(layout.scale,.72)
+                :layout.scale);
+
+        const x=
+            layout.offsetX+
+            m.x*layout.scale;
+
+        const y=
+            layout.offsetY+
+            m.y*layout.scale+
+            HANGING_OFFSET*layout.scale;
+
+        state.element.style.left=
+            `${x-(width-m.width*layout.scale)/2}px`;
+
+        state.element.style.top=
+            `${y}px`;
+
+        state.element.style.width=
+            `${width}px`;
+
+        state.element.style.height=
+            `${height}px`;
+
+    }
+
 }
 
 function animatePolaroids(time){
