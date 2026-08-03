@@ -50,6 +50,30 @@ canvas{
     pointer-events:none;
 }
 
+
+
+/* ---------- Polaroid Hotspots ---------- */
+.polaroid{
+position:absolute;
+width:68px;
+height:92px;
+z-index:50;
+cursor:pointer;
+transform-origin:50% 0%;
+will-change:transform;
+background:rgba(255,0,0,.12); /* change to transparent after alignment */
+}
+.p1{left:40%;top:8%;}
+.p2{left:44%;top:7%;}
+.p3{left:48%;top:8%;}
+.p4{left:52%;top:9%;}
+.p5{left:56%;top:10%;}
+.p6{left:60%;top:11%;}
+.p7{left:64%;top:12%;}
+.p8{left:68%;top:13%;}
+.p9{left:72%;top:14%;}
+.p10{left:76%;top:15%;}
+
 </style>
 </head>
 
@@ -62,6 +86,16 @@ canvas{
     src="./14E3A3B9-4C34-479F-BCA4-D1DA57F724B9.png"
     alt="Background"
 >
+<div class="polaroid p1"></div>
+<div class="polaroid p2"></div>
+<div class="polaroid p3"></div>
+<div class="polaroid p4"></div>
+<div class="polaroid p5"></div>
+<div class="polaroid p6"></div>
+<div class="polaroid p7"></div>
+<div class="polaroid p8"></div>
+<div class="polaroid p9"></div>
+<div class="polaroid p10"></div>
 <canvas id="canvas"></canvas>
 
 </div>
@@ -295,7 +329,38 @@ drawConstellations();
 
     }
 
-    requestAnimationFrame(animate);
+    
+
+// ---------- Polaroid Motion ----------
+const photos=[...document.querySelectorAll('.polaroid')];
+const states=photos.map(()=>({
+ angle:(Math.random()-0.5)*4,
+ vel:0,
+ seed:Math.random()*1000
+}));
+let mx=-9999,my=-9999;
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+window.addEventListener('mouseleave',()=>{mx=my=-9999;});
+function animatePolaroids(time){
+ photos.forEach((p,i)=>{
+   const s=states[i];
+   const r=p.getBoundingClientRect();
+   const cx=r.left+r.width/2;
+   const dx=mx-cx;
+   const dist=Math.abs(dx);
+   if(dist<180) s.vel+=(-dx)*0.0008;
+   s.vel+=Math.sin(time*0.00025+s.seed)*0.02;
+   s.vel+=(-s.angle)*0.03;
+   s.vel*=0.985;
+   s.angle+=s.vel;
+   const bob=Math.sin(time*0.0015+s.seed)*2;
+   p.style.transform=`translateY(${bob}px) rotate(${s.angle}deg)`;
+ });
+ requestAnimationFrame(animatePolaroids);
+}
+requestAnimationFrame(animatePolaroids);
+
+requestAnimationFrame(animate);
 
 }
 // ------------------------
