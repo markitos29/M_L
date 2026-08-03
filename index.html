@@ -111,6 +111,95 @@ body.memory-open #memory-aura{opacity:1;transform:scale(1)}
     }
 
 }
+    #music-button{
+    position:fixed;
+    top:max(14px,env(safe-area-inset-top));
+    left:14px;
+    z-index:50;
+
+    width:68px;
+    height:68px;
+
+    padding:0;
+    overflow:hidden;
+
+    border:1px solid rgba(255,230,210,.38);
+    border-radius:50%;
+
+    background:rgba(15,4,6,.42);
+
+    cursor:pointer;
+
+    box-shadow:
+        0 0 14px rgba(255,90,90,.28),
+        0 0 28px rgba(180,20,35,.18),
+        0 6px 18px rgba(0,0,0,.48);
+
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+
+    transition:
+        transform .3s ease,
+        opacity .3s ease,
+        box-shadow .3s ease;
+}
+
+#music-button img{
+    display:block;
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    pointer-events:none;
+    user-select:none;
+}
+
+#music-button:hover{
+    transform:scale(1.08);
+
+    box-shadow:
+        0 0 18px rgba(255,100,100,.42),
+        0 0 38px rgba(180,20,35,.28),
+        0 8px 22px rgba(0,0,0,.52);
+}
+
+#music-button.is-playing{
+    animation:musicPulse 2.4s ease-in-out infinite;
+}
+
+#music-button.is-muted{
+    opacity:.48;
+    animation:none;
+}
+
+@keyframes musicPulse{
+    0%,100%{
+        transform:scale(1);
+        box-shadow:
+            0 0 14px rgba(255,90,90,.28),
+            0 0 28px rgba(180,20,35,.18),
+            0 6px 18px rgba(0,0,0,.48);
+    }
+
+    50%{
+        transform:scale(1.06);
+        box-shadow:
+            0 0 22px rgba(255,110,110,.48),
+            0 0 44px rgba(190,25,40,.32),
+            0 7px 20px rgba(0,0,0,.52);
+    }
+}
+
+@media(max-width:700px){
+    #music-button{
+        top:max(10px,env(safe-area-inset-top));
+        left:10px;
+
+        width:54px;
+        height:54px;
+    }
+}
 </style>
 </head>
 <body>
@@ -575,6 +664,164 @@ function animateSky(now){const dt=Math.min((now-last)/1000,.05);const t=now/1000
 window.addEventListener("resize",resizeCanvas);
 resizeCanvas();
 requestAnimationFrame(animateSky);
+const backgroundMusic=
+    document.querySelector(
+        "#background-music"
+    );
+
+const musicButton=
+    document.querySelector(
+        "#music-button"
+    );
+
+let musicStarted=false;
+let musicMuted=false;
+let musicFadeFrame=null;
+
+function fadeMusic(
+    targetVolume,
+    duration=1600
+){
+    if(musicFadeFrame){
+        cancelAnimationFrame(
+            musicFadeFrame
+        );
+    }
+
+    const startVolume=
+        backgroundMusic.volume;
+
+    const startTime=
+        performance.now();
+
+    function updateVolume(now){
+        const progress=Math.min(
+            (now-startTime)/duration,
+            1
+        );
+
+        const eased=
+            1-Math.pow(1-progress,3);
+
+        backgroundMusic.volume=
+            startVolume+
+            (
+                targetVolume-
+                startVolume
+            )*
+            eased;
+
+        if(progress<1){
+            musicFadeFrame=
+                requestAnimationFrame(
+                    updateVolume
+                );
+        }
+    }
+
+    musicFadeFrame=
+        requestAnimationFrame(
+            updateVolume
+        );
+}
+
+async function startMusic(){
+    if(musicStarted){
+        return;
+    }
+
+    backgroundMusic.volume=0;
+
+    try{
+        await backgroundMusic.play();
+
+        musicStarted=true;
+        musicMuted=false;
+
+        musicButton.classList.add(
+            "is-playing"
+        );
+
+        musicButton.classList.remove(
+            "is-muted"
+        );
+
+        fadeMusic(.22,2200);
+    }catch(error){
+        console.log(
+            "Tap the rose to start music."
+        );
+    }
+}
+
+function toggleMusic(){
+    if(!musicStarted){
+        startMusic();
+        return;
+    }
+
+    musicMuted=!musicMuted;
+
+    if(musicMuted){
+        fadeMusic(0,500);
+
+        musicButton.classList.remove(
+            "is-playing"
+        );
+
+        musicButton.classList.add(
+            "is-muted"
+        );
+    }else{
+        backgroundMusic.play().catch(
+            ()=>{}
+        );
+
+        fadeMusic(.22,900);
+
+        musicButton.classList.add(
+            "is-playing"
+        );
+
+        musicButton.classList.remove(
+            "is-muted"
+        );
+    }
+}
+
+musicButton.addEventListener(
+    "click",
+    event=>{
+        event.stopPropagation();
+        toggleMusic();
+    }
+);
+
+document.addEventListener(
+    "pointerdown",
+    startMusic,
+    {
+        once:true
+    }
+);
 </script>
+<audio
+    id="background-music"
+    src="prestame-tu-corazon.mp3"
+    loop
+    preload="auto"
+></audio>
+
+<button
+    id="music-button"
+    type="button"
+    aria-label="Reproducir o pausar música"
+>
+    <img
+        src="rose-heart-button.png"
+        alt=""
+        draggable="false"
+    >
+</button>
 </body>
 </html>
