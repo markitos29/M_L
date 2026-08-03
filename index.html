@@ -1,535 +1,748 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our Night</title>
+    <meta charset="UTF-8">
 
-<style>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+    <title>Our Night</title>
 
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#000;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-body{
-    font-family:system-ui,sans-serif;
-}
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
 
-#scene{
-    position:relative;
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-}
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", sans-serif;
+        }
 
-#background{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    user-select:none;
-    pointer-events:none;
-    -webkit-user-drag:none;
-}
+        #scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+        }
 
-canvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-}
+        #background {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            user-select: none;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
 
+        #sky {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
 
+        #polaroid-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
 
-/* ---------- Polaroid Hotspots ---------- */
-.polaroid{
-position:absolute;
-width:68px;
-height:92px;
-z-index:50;
-cursor:pointer;
-transform-origin:50% 0%;
-will-change:transform;
-background:rgba(255,0,0,.12); /* change to transparent after alignment */
-}
-.p1{left:40%;top:8%;}
-.p2{left:44%;top:7%;}
-.p3{left:48%;top:8%;}
-.p4{left:52%;top:9%;}
-.p5{left:56%;top:10%;}
-.p6{left:60%;top:11%;}
-.p7{left:64%;top:12%;}
-.p8{left:68%;top:13%;}
-.p9{left:72%;top:14%;}
-.p10{left:76%;top:15%;}
+        .polaroid {
+            position: absolute;
+            display: block;
+            overflow: visible;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            pointer-events: auto;
+            transform-origin: 50% 0%;
+            will-change: transform;
+            touch-action: manipulation;
+        }
 
-</style>
+        .polaroid-card {
+            position: absolute;
+            inset: 0;
+            padding:
+                calc(var(--photo-scale) * 5px)
+                calc(var(--photo-scale) * 5px)
+                calc(var(--photo-scale) * 13px);
+            overflow: hidden;
+            border:
+                calc(var(--photo-scale) * 1px)
+                solid rgba(255, 247, 224, 0.9);
+            background: #e8dfca;
+            box-shadow:
+                0 0 calc(var(--photo-scale) * 5px)
+                rgba(255, 238, 195, 0.45),
+                0 calc(var(--photo-scale) * 4px)
+                calc(var(--photo-scale) * 8px)
+                rgba(0, 0, 0, 0.45);
+        }
+
+        .polaroid-media {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: cover;
+            background: #151515;
+            pointer-events: none;
+        }
+
+        .polaroid:hover .polaroid-card,
+        .polaroid:focus-visible .polaroid-card {
+            box-shadow:
+                0 0 calc(var(--photo-scale) * 11px)
+                rgba(255, 240, 200, 0.75),
+                0 calc(var(--photo-scale) * 5px)
+                calc(var(--photo-scale) * 10px)
+                rgba(0, 0, 0, 0.5);
+        }
+
+        .polaroid:focus-visible {
+            outline: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .polaroid {
+                transform: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
-<div id="scene">
-
-<img
-    id="background"
-    src="./0AB60D51-AF33-4329-99A1-CFE3B9A83CE0.png"
-    alt="Background"
->
-<div class="polaroid p1"></div>
-<div class="polaroid p2"></div>
-<div class="polaroid p3"></div>
-<div class="polaroid p4"></div>
-<div class="polaroid p5"></div>
-<div class="polaroid p6"></div>
-<div class="polaroid p7"></div>
-<div class="polaroid p8"></div>
-<div class="polaroid p9"></div>
-<div class="polaroid p10"></div>
-<canvas id="canvas"></canvas>
-
-</div>
-
-<script>
-
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
-
-let w,h,dpr;
-
-function resize(){
-
-    dpr=Math.min(window.devicePixelRatio||1,2);
-
-    w=window.innerWidth;
-    h=window.innerHeight;
-
-    canvas.width=w*dpr;
-    canvas.height=h*dpr;
-
-    canvas.style.width=w+"px";
-    canvas.style.height=h+"px";
-
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-
-}
-
-window.addEventListener("resize",resize);
-
-resize();
-
-function rand(a,b){
-    return Math.random()*(b-a)+a;
-}
-
-const stars=[];
-
-class Star{
-
-    constructor(){
-
-        this.x=rand(0,w);
-        this.y=rand(0,h*.72);
-
-        this.size=rand(.4,1.3);
-
-        this.alpha=rand(.05,.25);
-
-        this.phase=Math.random()*Math.PI*2;
-
-        this.speed=rand(.15,.7);
-
-        this.glow=rand(2,7);
-
-        this.grow=rand(.08,.25);
-
-    }
-
-    draw(t){
-
-        const a=this.alpha+
-        Math.sin(t*this.speed+this.phase)*.18;
-
-        const r=this.size+
-        Math.sin(t*this.grow+this.phase)*.18;
-
-        ctx.beginPath();
-
-        ctx.fillStyle=`rgba(255,255,255,${Math.max(a,0)})`;
-
-        ctx.shadowBlur=this.glow;
-
-        ctx.shadowColor="white";
-
-        ctx.arc(
-            this.x,
-            this.y,
-            Math.max(.2,r),
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-
-        ctx.shadowBlur=0;
-
-    }
-
-}
-
-function buildStars(){
-
-    stars.length=0;
-
-    for(let i=0;i<420;i++){
-
-        stars.push(new Star());
-
-    }
-
-}
-
-buildStars();
-    function drawStars(time){
-
-    for(const star of stars){
-        star.draw(time);
-    }
-
-}
-
-const shootingStars=[];
-
-class ShootingStar{
-
-    constructor(){
-
-        this.reset();
-
-    }
-
-    reset(){
-
-        this.x=rand(w*0.1,w*0.9);
-
-        this.y=rand(20,h*0.35);
-
-        this.length=rand(120,220);
-
-        this.speed=rand(700,1000);
-
-        this.life=0;
-
-        this.maxLife=rand(0.9,1.4);
-
-        this.angle=Math.PI/4+rand(-0.12,0.12);
-
-    }
-
-    update(dt){
-
-        this.life+=dt;
-
-        this.x+=Math.cos(this.angle)*this.speed*dt;
-        this.y+=Math.sin(this.angle)*this.speed*dt;
-
-    }
-
-    draw(){
-
-        const alpha=Math.max(0,1-this.life/this.maxLife);
-
-        ctx.save();
-
-        ctx.globalAlpha=alpha;
-
-        ctx.lineWidth=2;
-
-        ctx.strokeStyle="rgba(255,255,255,.9)";
-
-        ctx.shadowBlur=12;
-
-        ctx.shadowColor="white";
-
-        ctx.beginPath();
-
-        ctx.moveTo(this.x,this.y);
-
-        ctx.lineTo(
-            this.x-Math.cos(this.angle)*this.length,
-            this.y-Math.sin(this.angle)*this.length
-        );
-
-        ctx.stroke();
-
-        ctx.restore();
-
-    }
-
-    get dead(){
-
-        return this.life>=this.maxLife;
-
-    }
-
-}
-
-let nextMeteor=rand(8,20);
-
-let last=performance.now();
-
-function animate(now){
-
-    const dt=(now-last)/1000;
-
-    last=now;
-
-    ctx.clearRect(0,0,w,h);
-
-    const t=now*0.001;
-
-    drawStars(t);
-
-    updateConstellations(dt);
-drawConstellations();
-
-    nextMeteor-=dt;
-
-    if(nextMeteor<=0 && shootingStars.length<2){
-
-        shootingStars.push(new ShootingStar());
-
-        nextMeteor=rand(8,20);
-
-    }
-
-    for(let i=shootingStars.length-1;i>=0;i--){
-
-        const s=shootingStars[i];
-
-        s.update(dt);
-
-        s.draw();
-
-        if(s.dead){
-
-            shootingStars.splice(i,1);
-
-        }
-
-    }
-
-    
-
-// ---------- Polaroid Motion ----------
-const photos=[...document.querySelectorAll('.polaroid')];
-const states=photos.map(()=>({
- angle:(Math.random()-0.5)*4,
- vel:0,
- seed:Math.random()*1000
-}));
-let mx=-9999,my=-9999;
-window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-window.addEventListener('mouseleave',()=>{mx=my=-9999;});
-function animatePolaroids(time){
- photos.forEach((p,i)=>{
-   const s=states[i];
-   const r=p.getBoundingClientRect();
-   const cx=r.left+r.width/2;
-   const dx=mx-cx;
-   const dist=Math.abs(dx);
-   if(dist<180) s.vel+=(-dx)*0.0008;
-   s.vel+=Math.sin(time*0.00025+s.seed)*0.02;
-   s.vel+=(-s.angle)*0.03;
-   s.vel*=0.985;
-   s.angle+=s.vel;
-   const bob=Math.sin(time*0.0015+s.seed)*2;
-   p.style.transform=`translateY(${bob}px) rotate(${s.angle}deg)`;
- });
- requestAnimationFrame(animatePolaroids);
-}
-requestAnimationFrame(animatePolaroids);
-
-requestAnimationFrame(animate);
-
-}
-// ------------------------
-// Constellations
-// ------------------------
-
-let constellationTimer = rand(20, 40);
-let constellationAlpha = 0;
-let constellationVisible = false;
-let constellationHold = 0;
-let constellation = [];
-
-function distance(a, b) {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return Math.sqrt(dx * dx + dy * dy);
-}
-
-function createRandomConstellation() {
-
-    constellation = [];
-
-    const start = stars[Math.floor(rand(0, stars.length))];
-
-    constellation.push(start);
-
-    let current = start;
-
-    for (let i = 0; i < 5; i++) {
-
-        let nearest = null;
-        let best = 999999;
-
-        for (const star of stars) {
-
-            if (constellation.includes(star)) continue;
-
-            const d = distance(current, star);
-
-            if (d < best && d < 140) {
-                best = d;
-                nearest = star;
+    <main id="scene">
+        <img
+            id="background"
+            src="assets/background-clean.jpg"
+            alt=""
+            draggable="false"
+        >
+
+        <canvas id="sky"></canvas>
+
+        <div id="polaroid-layer" aria-label="Our memories"></div>
+    </main>
+
+    <script>
+        const scene = document.querySelector("#scene");
+        const background = document.querySelector("#background");
+        const polaroidLayer =
+            document.querySelector("#polaroid-layer");
+
+        /*
+         * These positions were measured from the exact
+         * 1448 × 1086 background artwork you uploaded.
+         */
+        const ORIGINAL_WIDTH = 1448;
+        const ORIGINAL_HEIGHT = 1086;
+
+        const memories = [
+            {
+                type: "image",
+                file: "assets/memory-1.jpg",
+                x: 67,
+                y: 647,
+                width: 70,
+                height: 73
+            },
+            {
+                type: "image",
+                file: "assets/memory-2.jpg",
+                x: 130,
+                y: 605,
+                width: 70,
+                height: 67
+            },
+            {
+                type: "image",
+                file: "assets/memory-3.jpg",
+                x: 267,
+                y: 658,
+                width: 70,
+                height: 74
+            },
+            {
+                type: "image",
+                file: "assets/memory-4.jpg",
+                x: 324,
+                y: 637,
+                width: 67,
+                height: 67
+            },
+            {
+                type: "image",
+                file: "assets/memory-5.jpg",
+                x: 365,
+                y: 525,
+                width: 67,
+                height: 66
+            },
+            {
+                type: "image",
+                file: "assets/memory-6.jpg",
+                x: 446,
+                y: 579,
+                width: 68,
+                height: 67
+            },
+            {
+                type: "image",
+                file: "assets/memory-7.jpg",
+                x: 526,
+                y: 604,
+                width: 67,
+                height: 67
+            },
+            {
+                type: "image",
+                file: "assets/memory-8.jpg",
+                x: 585,
+                y: 566,
+                width: 65,
+                height: 67
+            },
+            {
+                type: "video",
+                file: "assets/memory-9.mp4",
+                x: 633,
+                y: 646,
+                width: 68,
+                height: 68
+            },
+            {
+                type: "video",
+                file: "assets/memory-10.mp4",
+                x: 680,
+                y: 596,
+                width: 68,
+                height: 68
+            }
+        ];
+
+        const polaroids = [];
+
+        function createPolaroid(memory, index) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "polaroid";
+            button.setAttribute(
+                "aria-label",
+                `Open memory ${index + 1}`
+            );
+
+            const card = document.createElement("span");
+            card.className = "polaroid-card";
+
+            let media;
+
+            if (memory.type === "video") {
+                media = document.createElement("video");
+                media.src = memory.file;
+                media.muted = true;
+                media.loop = true;
+                media.playsInline = true;
+                media.preload = "metadata";
+
+                media.addEventListener("loadeddata", () => {
+                    media.currentTime = 0.05;
+                });
+            } else {
+                media = document.createElement("img");
+                media.src = memory.file;
+                media.alt = "";
+                media.draggable = false;
             }
 
+            media.className = "polaroid-media";
+
+            card.appendChild(media);
+            button.appendChild(card);
+            polaroidLayer.appendChild(button);
+
+            const state = {
+                element: button,
+                media,
+                memory,
+                angle: (Math.random() - 0.5) * 1.4,
+                velocity: 0,
+                phase: Math.random() * Math.PI * 2,
+                breezeSpeed: 0.00018 + Math.random() * 0.00012,
+                breezeStrength: 0.0009 + Math.random() * 0.0007
+            };
+
+            button.addEventListener("mouseenter", () => {
+                state.velocity +=
+                    Math.random() > 0.5 ? 0.09 : -0.09;
+
+                if (memory.type === "video") {
+                    media.play().catch(() => {});
+                }
+            });
+
+            button.addEventListener("mouseleave", () => {
+                if (memory.type === "video") {
+                    media.pause();
+                }
+            });
+
+            button.addEventListener("click", () => {
+                state.velocity +=
+                    Math.random() > 0.5 ? 0.65 : -0.65;
+
+                /*
+                 * The photo/video popup will be added here
+                 * in the next step.
+                 */
+            });
+
+            polaroids.push(state);
         }
 
-        if (!nearest) break;
+        memories.forEach(createPolaroid);
 
-        constellation.push(nearest);
-        current = nearest;
+        function getBackgroundLayout() {
+            const sceneWidth = scene.clientWidth;
+            const sceneHeight = scene.clientHeight;
 
-    }
+            const scale = Math.max(
+                sceneWidth / ORIGINAL_WIDTH,
+                sceneHeight / ORIGINAL_HEIGHT
+            );
 
-}
+            const renderedWidth = ORIGINAL_WIDTH * scale;
+            const renderedHeight = ORIGINAL_HEIGHT * scale;
 
-function createMLConstellation() {
-
-    const x = rand(w * 0.15, w * 0.55);
-    const y = rand(h * 0.10, h * 0.30);
-
-    constellation = [
-
-        { x:x, y:y },
-        { x:x+12, y:y+30 },
-        { x:x+24, y:y },
-        { x:x+36, y:y+30 },
-        { x:x+48, y:y },
-
-        { x:x+65, y:y+15 },
-
-        { x:x+82, y:y },
-        { x:x+82, y:y+30 },
-        { x:x+106, y:y+30 }
-
-    ];
-
-}
-
-function updateConstellations(dt){
-
-    constellationTimer -= dt;
-
-    if(!constellationVisible && constellationTimer <= 0){
-
-        if(Math.random() < 0.40){
-
-            createMLConstellation();
-
-        }else{
-
-            createRandomConstellation();
-
+            return {
+                scale,
+                offsetX: (sceneWidth - renderedWidth) / 2,
+                offsetY: (sceneHeight - renderedHeight) / 2
+            };
         }
 
-        constellationVisible = true;
-        constellationAlpha = 0;
-        constellationHold = rand(3,5);
+        function positionPolaroids() {
+            const layout = getBackgroundLayout();
 
-        constellationTimer = rand(15,30);
+            polaroids.forEach((state) => {
+                const { memory, element } = state;
 
-    }
+                const left =
+                    layout.offsetX + memory.x * layout.scale;
 
-    if(constellationVisible){
+                const top =
+                    layout.offsetY + memory.y * layout.scale;
 
-        if(constellationAlpha < 1 && constellationHold > 2.5){
+                const width = memory.width * layout.scale;
+                const height = memory.height * layout.scale;
 
-            constellationAlpha += dt * 0.5;
+                element.style.left = `${left}px`;
+                element.style.top = `${top}px`;
+                element.style.width = `${width}px`;
+                element.style.height = `${height}px`;
 
+                element.style.setProperty(
+                    "--photo-scale",
+                    layout.scale
+                );
+            });
         }
 
-        constellationHold -= dt;
+        let pointerX = -9999;
+        let pointerY = -9999;
 
-        if(constellationHold <= 0){
+        window.addEventListener("pointermove", (event) => {
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+        });
 
-            constellationAlpha -= dt * 0.5;
+        window.addEventListener("pointerleave", () => {
+            pointerX = -9999;
+            pointerY = -9999;
+        });
 
-            if(constellationAlpha <= 0){
+        function animatePolaroids(time) {
+            polaroids.forEach((state) => {
+                const rectangle =
+                    state.element.getBoundingClientRect();
 
-                constellationVisible = false;
+                const centerX =
+                    rectangle.left + rectangle.width / 2;
 
-                constellation = [];
+                const centerY =
+                    rectangle.top + rectangle.height / 2;
 
+                const pointerDistance = Math.hypot(
+                    pointerX - centerX,
+                    pointerY - centerY
+                );
+
+                if (pointerDistance < 110) {
+                    const direction =
+                        pointerX < centerX ? 1 : -1;
+
+                    state.velocity += direction * 0.002;
+                }
+
+                const breeze =
+                    Math.sin(
+                        time * state.breezeSpeed +
+                        state.phase
+                    ) * state.breezeStrength;
+
+                state.velocity += breeze;
+
+                /*
+                 * Spring force pulls the photo toward rest.
+                 */
+                state.velocity += -state.angle * 0.0045;
+
+                /*
+                 * Damping prevents endless swinging.
+                 */
+                state.velocity *= 0.982;
+
+                state.angle += state.velocity;
+
+                state.angle = Math.max(
+                    -2.2,
+                    Math.min(2.2, state.angle)
+                );
+
+                const verticalMovement =
+                    Math.sin(
+                        time * 0.00045 +
+                        state.phase
+                    ) * 0.45;
+
+                state.element.style.transform =
+                    `translateY(${verticalMovement}px) ` +
+                    `rotate(${state.angle}deg)`;
+            });
+
+            requestAnimationFrame(animatePolaroids);
+        }
+
+        background.addEventListener(
+            "load",
+            positionPolaroids
+        );
+
+        window.addEventListener(
+            "resize",
+            positionPolaroids
+        );
+
+        if (background.complete) {
+            positionPolaroids();
+        }
+
+        requestAnimationFrame(animatePolaroids);
+
+        /*
+         * Existing sky animation.
+         */
+
+        const canvas = document.querySelector("#sky");
+        const context =
+            canvas.getContext("2d", { alpha: true });
+
+        let width = 0;
+        let height = 0;
+        let deviceScale = 1;
+        let previousFrame = performance.now();
+
+        const stars = [];
+        const shootingStars = [];
+
+        function randomBetween(minimum, maximum) {
+            return (
+                Math.random() *
+                (maximum - minimum) +
+                minimum
+            );
+        }
+
+        class Star {
+            constructor() {
+                this.reset();
             }
 
+            reset() {
+                this.x = randomBetween(0, width);
+                this.y = randomBetween(0, height * 0.72);
+                this.radius = randomBetween(0.35, 1.25);
+                this.baseAlpha =
+                    randomBetween(0.04, 0.24);
+                this.alphaRange =
+                    randomBetween(0.05, 0.18);
+                this.phase =
+                    randomBetween(0, Math.PI * 2);
+                this.speed =
+                    randomBetween(0.18, 0.7);
+                this.sizePhase =
+                    randomBetween(0, Math.PI * 2);
+                this.sizeSpeed =
+                    randomBetween(0.1, 0.35);
+            }
+
+            draw(time) {
+                const alpha = Math.max(
+                    0,
+                    this.baseAlpha +
+                    Math.sin(
+                        time * this.speed +
+                        this.phase
+                    ) * this.alphaRange
+                );
+
+                const radius = Math.max(
+                    0.15,
+                    this.radius +
+                    Math.sin(
+                        time * this.sizeSpeed +
+                        this.sizePhase
+                    ) * 0.12
+                );
+
+                context.beginPath();
+
+                context.fillStyle =
+                    `rgba(255, 255, 255, ${alpha})`;
+
+                context.arc(
+                    this.x,
+                    this.y,
+                    radius,
+                    0,
+                    Math.PI * 2
+                );
+
+                context.fill();
+            }
         }
 
-    }
+        class ShootingStar {
+            constructor() {
+                this.x = randomBetween(
+                    width * 0.1,
+                    width * 0.82
+                );
 
-}
+                this.y = randomBetween(
+                    height * 0.04,
+                    height * 0.3
+                );
 
-function drawConstellations(){
+                this.angle =
+                    Math.PI / 4 +
+                    randomBetween(-0.12, 0.12);
 
-    if(!constellationVisible || constellation.length < 2) return;
+                this.speed =
+                    randomBetween(620, 920);
 
-    ctx.save();
+                this.length =
+                    randomBetween(90, 180);
 
-    ctx.globalAlpha = constellationAlpha * 0.45;
+                this.age = 0;
 
-    ctx.strokeStyle = "white";
+                this.lifetime =
+                    randomBetween(0.85, 1.25);
+            }
 
-    ctx.lineWidth = 1;
+            update(deltaTime) {
+                this.age += deltaTime;
 
-    ctx.shadowBlur = 8;
+                this.x +=
+                    Math.cos(this.angle) *
+                    this.speed *
+                    deltaTime;
 
-    ctx.shadowColor = "white";
+                this.y +=
+                    Math.sin(this.angle) *
+                    this.speed *
+                    deltaTime;
+            }
 
-    ctx.beginPath();
+            draw() {
+                const alpha = Math.max(
+                    0,
+                    1 - this.age / this.lifetime
+                );
 
-    for(let i=0;i<constellation.length-1;i++){
+                context.save();
 
-        ctx.moveTo(
-            constellation[i].x,
-            constellation[i].y
+                context.globalAlpha = alpha * 0.75;
+                context.lineWidth = 1.5;
+                context.strokeStyle =
+                    "rgba(255, 255, 255, 0.9)";
+                context.shadowBlur = 10;
+                context.shadowColor =
+                    "rgba(255, 255, 255, 0.75)";
+
+                context.beginPath();
+
+                context.moveTo(this.x, this.y);
+
+                context.lineTo(
+                    this.x -
+                    Math.cos(this.angle) *
+                    this.length,
+
+                    this.y -
+                    Math.sin(this.angle) *
+                    this.length
+                );
+
+                context.stroke();
+                context.restore();
+            }
+
+            get finished() {
+                return this.age >= this.lifetime;
+            }
+        }
+
+        function buildStars() {
+            stars.length = 0;
+
+            const count = Math.min(
+                420,
+                Math.max(
+                    180,
+                    Math.floor(
+                        width * height / 3200
+                    )
+                )
+            );
+
+            for (
+                let index = 0;
+                index < count;
+                index += 1
+            ) {
+                stars.push(new Star());
+            }
+        }
+
+        function resizeCanvas() {
+            deviceScale = Math.min(
+                window.devicePixelRatio || 1,
+                2
+            );
+
+            width = window.innerWidth;
+            height = window.innerHeight;
+
+            canvas.width =
+                Math.round(width * deviceScale);
+
+            canvas.height =
+                Math.round(height * deviceScale);
+
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+
+            context.setTransform(
+                deviceScale,
+                0,
+                0,
+                deviceScale,
+                0,
+                0
+            );
+
+            buildStars();
+        }
+
+        let nextShootingStar =
+            randomBetween(8, 20);
+
+        function animateSky(now) {
+            const deltaTime = Math.min(
+                (now - previousFrame) / 1000,
+                0.05
+            );
+
+            const time = now / 1000;
+
+            previousFrame = now;
+
+            context.clearRect(
+                0,
+                0,
+                width,
+                height
+            );
+
+            for (const star of stars) {
+                star.draw(time);
+            }
+
+            nextShootingStar -= deltaTime;
+
+            if (
+                nextShootingStar <= 0 &&
+                shootingStars.length < 2
+            ) {
+                shootingStars.push(
+                    new ShootingStar()
+                );
+
+                nextShootingStar =
+                    randomBetween(8, 20);
+            }
+
+            for (
+                let index =
+                    shootingStars.length - 1;
+                index >= 0;
+                index -= 1
+            ) {
+                const shootingStar =
+                    shootingStars[index];
+
+                shootingStar.update(deltaTime);
+                shootingStar.draw();
+
+                if (shootingStar.finished) {
+                    shootingStars.splice(
+                        index,
+                        1
+                    );
+                }
+            }
+
+            requestAnimationFrame(animateSky);
+        }
+
+        window.addEventListener(
+            "resize",
+            resizeCanvas
         );
 
-        ctx.lineTo(
-            constellation[i+1].x,
-            constellation[i+1].y
-        );
-
-    }
-
-    ctx.stroke();
-
-    ctx.restore();
-
-}
-requestAnimationFrame(animate);
-    </script>
-
+        resizeCanvas();
+        requestAnimationFrame(animateSky);
+    </script>
 </body>
 </html>
