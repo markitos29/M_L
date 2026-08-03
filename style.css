@@ -1,1 +1,466 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
+
+body{
+
+    overflow:hidden;
+    height:100vh;
+    background:#020617;
+}
+
+
+
+#sky{
+
+    position:absolute;
+    width:100%;
+    height:100%;
+    z-index:0;
+
+}
+
+
+
+.scene{
+
+    position:relative;
+    height:100vh;
+    width:100%;
+    overflow:hidden;
+
+}
+
+
+
+
+/* =====================
+        MOON
+===================== */
+
+
+.moon{
+
+    position:absolute;
+
+    top:90px;
+    right:180px;
+
+    width:140px;
+    height:140px;
+
+    background:
+    radial-gradient(circle at 35% 35%,
+    #fff,
+    #ddd 40%,
+    #aaa);
+
+    border-radius:50%;
+
+    box-shadow:
+
+    0 0 40px #fff,
+    0 0 100px rgba(255,255,255,.5);
+
+}
+
+
+
+.moon-glow{
+
+    position:absolute;
+
+    width:250px;
+    height:250px;
+
+    top:-55px;
+    left:-55px;
+
+    border-radius:50%;
+
+    background:
+    radial-gradient(
+    circle,
+    rgba(255,255,255,.25),
+    transparent 70%
+    );
+
+}
+
+
+
+
+
+/* =====================
+        LAKE
+===================== */
+
+
+.lake{
+
+    position:absolute;
+
+    bottom:0;
+
+    width:100%;
+    height:35%;
+
+
+    background:
+
+    linear-gradient(
+    to bottom,
+    rgba(30,58,138,.7),
+    #020617
+    );
+
+
+    border-top:
+
+    2px solid rgba(255,255,255,.15);
+
+}
+
+
+
+.reflection{
+
+    position:absolute;
+
+    width:160px;
+    height:250px;
+
+    right:165px;
+    top:-80px;
+
+
+    background:
+
+    linear-gradient(
+    rgba(255,255,255,.35),
+    transparent
+    );
+
+
+    filter:blur(12px);
+
+}
+
+
+
+
+
+/* =====================
+        TREE
+===================== */
+
+
+.tree{
+
+    position:absolute;
+
+    left:90px;
+
+    bottom:210px;
+
+}
+
+
+
+.trunk{
+
+
+    width:45px;
+    height:240px;
+
+    background:
+
+    linear-gradient(
+    90deg,
+    #3b2414,
+    #6b3f20
+    );
+
+
+    margin:auto;
+
+}
+
+
+
+.leaves{
+
+    position:absolute;
+
+    background:#052e16;
+
+    border-radius:50%;
+
+    box-shadow:
+
+    inset 0 0 20px #000;
+
+}
+
+
+
+.leaf1{
+
+    width:190px;
+    height:190px;
+
+    left:-70px;
+    top:-120px;
+
+}
+
+
+.leaf2{
+
+    width:160px;
+    height:160px;
+
+    left:-120px;
+    top:-40px;
+
+}
+
+
+.leaf3{
+
+    width:180px;
+    height:180px;
+
+    left:20px;
+    top:-50px;
+
+}
+
+
+.leaf4{
+
+    width:130px;
+    height:130px;
+
+    left:0;
+    top:-170px;
+
+}
+
+
+
+
+
+
+/* =====================
+        BENCH
+===================== */
+
+
+.bench{
+
+    position:absolute;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    bottom:190px;
+
+}
+
+
+
+.seat{
+
+    width:260px;
+    height:25px;
+
+    background:#713f12;
+
+    border-radius:10px;
+
+}
+
+
+
+
+.leg{
+
+    position:absolute;
+
+    width:15px;
+
+    height:90px;
+
+    background:#422006;
+
+    top:20px;
+
+}
+
+
+
+.left{
+
+    left:30px;
+
+}
+
+
+.right{
+
+    right:30px;
+
+}
+
+
+
+
+
+
+/* =====================
+        COUPLE
+===================== */
+
+
+.couple{
+
+
+    position:absolute;
+
+    bottom:230px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+
+
+
+.person{
+
+
+    position:relative;
+
+    width:70px;
+
+}
+
+
+
+
+.head{
+
+    width:45px;
+
+    height:45px;
+
+    background:#111827;
+
+    border-radius:50%;
+
+    margin:auto;
+
+}
+
+
+
+.body{
+
+
+    width:60px;
+
+    height:100px;
+
+    background:#111827;
+
+    border-radius:25px 25px 5px 5px;
+
+    margin:auto;
+
+}
+
+
+
+
+/* girlfriend curly hair */
+
+
+.girl .hair{
+
+
+    position:absolute;
+
+    top:-10px;
+
+    left:10px;
+
+    width:65px;
+
+    height:65px;
+
+    background:
+
+    radial-gradient(
+    circle,
+    #3f1d0b 30%,
+    transparent 32%
+    );
+
+
+    border-radius:50%;
+
+}
+
+
+
+
+
+
+
+/* =====================
+        M + L
+===================== */
+
+
+#love{
+
+
+    position:absolute;
+
+    top:230px;
+
+    width:100%;
+
+    text-align:center;
+
+
+    color:white;
+
+    font-size:40px;
+
+    font-family:
+
+    "Times New Roman",
+    serif;
+
+
+    opacity:0;
+
+
+    text-shadow:
+
+    0 0 20px white;
+
+
+}
