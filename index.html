@@ -1,1012 +1,135 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Midnight Garden 🌙</title>
+<title>M + L 🌙</title>
 
+<link rel="stylesheet" href="style.css">
 
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-
-body{
-
-    height:100vh;
-    overflow:hidden;
-
-    background:
-    radial-gradient(circle at 70% 15%,
-    rgba(80,80,120,.15),
-    transparent 35%),
-
-    linear-gradient(
-    180deg,
-    #010106,
-    #030313 55%,
-    #000005
-    );
-
-}
-
-
-/* =====================
-        MOON
-===================== */
-
-
-.moon{
-
-    position:absolute;
-
-    top:70px;
-    right:110px;
-
-    width:150px;
-    height:150px;
-
-    border-radius:50%;
-
-
-    background:
-    radial-gradient(
-    circle at 35% 35%,
-    #ededdf,
-    #aaa,
-    #555
-    );
-
-
-    opacity:.8;
-
-
-    box-shadow:
-
-    0 0 30px rgba(255,255,230,.35),
-    0 0 90px rgba(200,220,255,.2);
-
-}
-
-
-
-.moon::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:25px;
-    height:25px;
-
-    background:#777;
-
-    border-radius:50%;
-
-    top:40px;
-    left:35px;
-
-    opacity:.35;
-
-
-    box-shadow:
-
-    50px 20px 0 8px #777,
-    35px 80px 0 5px #666;
-
-}
-
-
-
-/* =====================
-        STARS
-===================== */
-
-
-.star{
-
-    position:absolute;
-
-    background:white;
-
-    border-radius:50%;
-
-    opacity:.35;
-
-}
-
-
-
-.star.glow{
-
-    box-shadow:
-
-    0 0 8px white;
-
-    animation:
-    twinkle 4s infinite;
-
-}
-
-
-
-@keyframes twinkle{
-
-50%{
-    opacity:1;
-}
-
-}
-
-
-
-/* =====================
-        LAKE
-===================== */
-
-
-.lake{
-
-    position:absolute;
-
-    bottom:0;
-
-    width:100%;
-
-    height:28%;
-
-
-    background:
-
-    linear-gradient(
-    180deg,
-    #10172e,
-    #020208
-    );
-
-    overflow:hidden;
-
-}
-
-
-
-.lake::before{
-
-    content:"";
-
-    position:absolute;
-
-    left:40%;
-
-    top:-20px;
-
-    width:220px;
-
-    height:200px;
-
-
-    background:
-
-    linear-gradient(
-    rgba(255,255,220,.25),
-    transparent
-    );
-
-
-    filter:blur(25px);
-
-}
-
-
-
-.lake::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:100%;
-
-    height:100%;
-
-
-    background:
-
-    repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 10px,
-    rgba(255,255,255,.025) 12px
-    );
-
-
-    animation:
-
-    water 6s infinite linear;
-
-}
-
-
-
-@keyframes water{
-
-from{
-    transform:translateY(0);
-}
-
-to{
-    transform:translateY(15px);
-}
-
-}
-
-
-
-/* =====================
-        MIST
-===================== */
-
-
-.mist{
-
-    position:absolute;
-
-    bottom:25%;
-
-    width:120%;
-
-    height:90px;
-
-    left:-10%;
-
-
-    background:
-
-    rgba(255,255,255,.04);
-
-
-    filter:blur(25px);
-
-
-    animation:
-
-    fog 14s infinite alternate;
-
-}
-
-
-
-@keyframes fog{
-
-from{
-    transform:translateX(-60px);
-}
-
-to{
-    transform:translateX(60px);
-}
-
-}
-
-
-
-/* =====================
-        TREE
-===================== */
-
-
-.tree{
-
-    position:absolute;
-
-    bottom:24%;
-
-    left:10%;
-
-
-    width:80px;
-
-    height:280px;
-
-
-    background:#010103;
-
-}
-
-
-
-.tree::before{
-
-    content:"";
-
-    position:absolute;
-
-
-    width:280px;
-
-    height:220px;
-
-
-    background:#010103;
-
-
-    border-radius:50%;
-
-
-    top:-130px;
-
-    left:-100px;
-
-
-    box-shadow:
-
-    100px -30px 0 20px #010103,
-
-    -70px 40px 0 10px #010103;
-
-}
-
-
-
-.tree::after{
-
-    content:"";
-
-    position:absolute;
-
-
-    width:20px;
-
-    height:150px;
-
-
-    background:#050507;
-
-
-    right:-10px;
-
-    top:80px;
-
-
-    transform:rotate(20deg);
-
-}
-
-
-
-/* =====================
-        BENCH
-===================== */
-
-
-.bench{
-
-    position:absolute;
-
-    bottom:24%;
-
-    left:48%;
-
-    width:180px;
-
-    height:15px;
-
-
-    background:#24150d;
-
-
-    box-shadow:
-
-    0 0 10px rgba(255,200,150,.1);
-
-}
-
-
-
-.bench::before,
-.bench::after{
-
-    content:"";
-
-    position:absolute;
-
-
-    width:10px;
-
-    height:70px;
-
-
-    background:#150b07;
-
-
-    bottom:-65px;
-
-}
-
-
-.bench::before{
-
-    left:25px;
-
-}
-
-
-.bench::after{
-
-    right:25px;
-
-}
-
-
-
-/* =====================
-        COUPLE
-===================== */
-
-
-.person{
-
-    position:absolute;
-
-    bottom:24%;
-
-}
-
-
-
-.man{
-
-    left:51%;
-
-}
-
-
-
-.woman{
-
-    left:46%;
-
-}
-
-
-
-.body{
-
-    position:absolute;
-
-    width:35px;
-
-    height:80px;
-
-
-    background:#030305;
-
-
-    border-radius:20px 20px 5px 5px;
-
-}
-
-
-
-.head{
-
-    position:absolute;
-
-    width:45px;
-
-    height:45px;
-
-
-    background:#030305;
-
-
-    border-radius:50%;
-
-
-    top:-35px;
-
-    left:-5px;
-
-}
-
-
-
-/* curly hair */
-
-.woman .head::before{
-
-    content:"";
-
-    position:absolute;
-
-
-    width:55px;
-
-    height:55px;
-
-
-    background:#020204;
-
-
-    border-radius:50%;
-
-
-    left:-5px;
-
-    top:-5px;
-
-
-    box-shadow:
-
-    10px 10px 0 #020204,
-
-    -10px 15px 0 #020204;
-
-}
-
-
-
-/* leaning pose */
-
-.woman{
-
-    transform:
-    rotate(-8deg);
-
-}
-
-
-</style>
 </head>
+
 
 <body>
 
 
-<div class="moon"></div>
-
-<div class="tree"></div>
-
-<div class="lake"></div>
-
-<div class="mist"></div>
+<canvas id="sky"></canvas>
 
 
-<!-- Couple -->
+<div class="scene">
 
-<div class="person man">
-    <div class="head"></div>
-    <div class="body"></div>
+
+    <!-- Moon -->
+
+    <div class="moon">
+
+        <div class="moon-glow"></div>
+
+    </div>
+
+
+
+    <!-- Tree -->
+
+    <div class="tree">
+
+        <div class="trunk"></div>
+
+        <div class="leaves leaf1"></div>
+        <div class="leaves leaf2"></div>
+        <div class="leaves leaf3"></div>
+        <div class="leaves leaf4"></div>
+
+    </div>
+
+
+
+    <!-- Lake -->
+
+    <div class="lake">
+
+        <div class="reflection"></div>
+
+    </div>
+
+
+
+
+    <!-- Bench -->
+
+    <div class="bench">
+
+        <div class="seat"></div>
+
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+
+
+    </div>
+
+
+
+    <!-- Couple -->
+
+    <div class="couple">
+
+
+        <!-- You -->
+
+        <div class="person you">
+
+            <div class="head"></div>
+
+            <div class="body"></div>
+
+        </div>
+
+
+
+
+        <!-- Girlfriend -->
+
+        <div class="person girl">
+
+
+            <div class="hair">
+
+            </div>
+
+
+            <div class="head"></div>
+
+
+            <div class="body"></div>
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+    <!-- Constellation Text -->
+
+    <div id="love">
+
+        M + L
+
+    </div>
+
+
+
 </div>
 
 
-<div class="person woman">
-    <div class="head"></div>
-    <div class="body"></div>
-</div>
-
-
-
-<!-- Audio -->
-
-<audio id="song" src="song.mp3"></audio>
-
-<audio id="wind" src="wind.mp3" loop></audio>
-
-<audio id="crickets" src="crickets.mp3" loop></audio>
-
-
-<button id="musicBtn">
-🌙 Play
-</button>
-
-
-
-<style>
-
-
-#musicBtn{
-
-position:absolute;
-
-bottom:30px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-padding:12px 25px;
-
-border-radius:30px;
-
-border:none;
-
-background:
-rgba(255,255,255,.15);
-
-color:white;
-
-font-size:16px;
-
-backdrop-filter:blur(10px);
-
-cursor:pointer;
-
-z-index:20;
-
-}
-
-
-/* petals */
-
-.petal{
-
-position:absolute;
-
-width:10px;
-
-height:15px;
-
-background:
-
-linear-gradient(
-135deg,
-#9b0038,
-#35000f
-);
-
-
-border-radius:
-
-100% 0 100% 0;
-
-
-opacity:.7;
-
-animation:
-
-fall linear infinite;
-
-}
-
-
-@keyframes fall{
-
-0%{
-
-transform:
-
-translateY(-10vh)
-translateX(0)
-rotate(0);
-
-}
-
-
-50%{
-
-transform:
-
-translateY(50vh)
-translateX(80px)
-rotate(180deg);
-
-}
-
-
-100%{
-
-transform:
-
-translateY(110vh)
-translateX(-40px)
-rotate(360deg);
-
-}
-
-}
-
-
-
-/* fireflies */
-
-.firefly{
-
-position:absolute;
-
-width:4px;
-
-height:4px;
-
-background:#fff5a0;
-
-border-radius:50%;
-
-
-box-shadow:
-
-0 0 15px #fff5a0;
-
-
-animation:
-
-float 8s infinite;
-
-}
-
-
-
-@keyframes float{
-
-
-50%{
-
-transform:
-
-translateY(-40px)
-translateX(30px);
-
-opacity:.3;
-
-}
-
-
-}
-
-
-
-/* moonlight around couple */
-
-.person{
-
-filter:
-
-drop-shadow(0 0 8px rgba(255,255,220,.15));
-
-}
-
-
-</style>
-
-
-
-<script>
-
-
-// STARS
-
-for(let i=0;i<300;i++){
-
-
-let s=document.createElement("div");
-
-s.className="star";
-
-
-let size=Math.random()*2+0.5;
-
-
-s.style.width=size+"px";
-
-s.style.height=size+"px";
-
-
-s.style.left=Math.random()*100+"vw";
-
-s.style.top=Math.random()*75+"vh";
-
-
-if(Math.random()>.82){
-
-s.classList.add("glow");
-
-}
-
-
-document.body.appendChild(s);
-
-
-}
-
-
-
-// SHOOTING STARS
-
-
-function meteor(){
-
-
-let m=document.createElement("div");
-
-m.className="shooting";
-
-
-m.style.position="absolute";
-
-m.style.width="140px";
-
-m.style.height="2px";
-
-m.style.background=
-"linear-gradient(90deg,transparent,white)";
-
-
-m.style.transform=
-"rotate(-45deg)";
-
-
-m.style.top=
-Math.random()*40+"vh";
-
-
-m.style.left="100%";
-
-
-m.style.animation=
-"meteor 4s linear";
-
-
-document.body.appendChild(m);
-
-
-setTimeout(()=>m.remove(),4000);
-
-
-}
-
-
-setInterval(meteor,5000);
-
-
-
-// PETALS
-
-
-for(let i=0;i<15;i++){
-
-
-let p=document.createElement("div");
-
-p.className="petal";
-
-
-p.style.left=
-Math.random()*100+"vw";
-
-
-p.style.animationDuration=
-(Math.random()*12+15)+"s";
-
-
-p.style.animationDelay=
-Math.random()*15+"s";
-
-
-document.body.appendChild(p);
-
-
-}
-
-
-
-// FIREFLIES
-
-
-for(let i=0;i<20;i++){
-
-
-let f=document.createElement("div");
-
-f.className="firefly";
-
-
-f.style.left=
-Math.random()*100+"vw";
-
-
-f.style.top=
-Math.random()*70+"vh";
-
-
-f.style.animationDelay=
-Math.random()*5+"s";
-
-
-document.body.appendChild(f);
-
-
-}
-
-
-
-// AUDIO SYSTEM
-
-
-const song=document.getElementById("song");
-
-const wind=document.getElementById("wind");
-
-const crickets=document.getElementById("crickets");
-
-const button=document.getElementById("musicBtn");
-
-
-wind.volume=.25;
-
-crickets.volume=.25;
-
-song.volume=0;
-
-
-
-// start night sounds
-
-wind.play().catch(()=>{});
-
-crickets.play().catch(()=>{});
-
-
-
-button.onclick=()=>{
-
-
-song.play();
-
-
-let fade=setInterval(()=>{
-
-
-if(wind.volume>.01){
-
-wind.volume-=.02;
-
-crickets.volume-=.02;
-
-
-}else{
-
-
-clearInterval(fade);
-
-
-}
-
-
-},300);
-
-
-
-let musicFade=setInterval(()=>{
-
-
-if(song.volume<.95){
-
-song.volume+=.03;
-
-}else{
-
-clearInterval(musicFade);
-
-}
-
-
-},300);
-
-
-
-button.innerHTML="❤️ Playing";
-
-
-};
-
-
-
-</script>
+<script src="script.js"></script>
 
 
 </body>
