@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Night Garden</title>
+<title>Midnight Garden 🌙</title>
 
 <style>
 
@@ -20,12 +20,12 @@ height:100vh;
 overflow:hidden;
 
 background:
-radial-gradient(circle at 70% 15%, rgba(50,50,90,.18), transparent 35%),
+radial-gradient(circle at 70% 15%, rgba(40,40,80,.18), transparent 35%),
 linear-gradient(
 180deg,
-#010107 0%,
-#030314 50%,
-#000005 100%
+#010107,
+#030314 55%,
+#000005
 );
 
 }
@@ -38,10 +38,10 @@ linear-gradient(
 position:absolute;
 
 top:80px;
-right:110px;
+right:100px;
 
-width:135px;
-height:135px;
+width:140px;
+height:140px;
 
 border-radius:50%;
 
@@ -50,22 +50,19 @@ background:
 radial-gradient(
 circle at 35% 35%,
 #d8d8d8,
-#999 60%,
-#666
+#999 65%,
+#555
 );
 
+opacity:.8;
 
 box-shadow:
 
 0 0 25px rgba(220,220,255,.35),
-0 0 70px rgba(150,150,220,.15);
-
-opacity:.85;
+0 0 80px rgba(180,180,255,.15);
 
 }
 
-
-/* Moon details */
 
 .moon::before{
 
@@ -73,26 +70,24 @@ content:"";
 
 position:absolute;
 
-width:20px;
-height:20px;
+width:22px;
+height:22px;
 
 background:#777;
 
 border-radius:50%;
 
 top:35px;
-left:30px;
+left:35px;
 
 opacity:.4;
 
-
 box-shadow:
 
-45px 20px 0 6px #777,
-30px 70px 0 4px #555;
+45px 20px 0 7px #777,
+30px 75px 0 5px #555;
 
 }
-
 
 
 /* Stars */
@@ -112,23 +107,19 @@ opacity:.4;
 
 .star.glow{
 
-opacity:.9;
-
 box-shadow:
-
 0 0 5px white,
-0 0 10px white;
+0 0 12px white;
 
 animation:twinkle 4s infinite;
 
 }
 
 
-
 @keyframes twinkle{
 
 0%,100%{
-opacity:.3;
+opacity:.25;
 }
 
 50%{
@@ -138,45 +129,34 @@ opacity:1;
 }
 
 
-
-/* Real meteor */
+/* Shooting stars */
 
 .shooting{
 
-
 position:absolute;
 
-width:120px;
+width:130px;
 
 height:2px;
 
-
 background:
-
 linear-gradient(
 90deg,
-rgba(255,255,255,0),
+transparent,
 white
 );
 
+transform:rotate(-45deg);
 
 filter:
 drop-shadow(0 0 8px white);
 
-
-transform:
-rotate(-45deg);
-
-
-animation:
-meteor 5s linear infinite;
-
-
 opacity:0;
 
+animation:
+meteor 5s linear;
 
 }
-
 
 
 .shooting::after{
@@ -203,15 +183,13 @@ box-shadow:
 }
 
 
-
 @keyframes meteor{
 
 
 0%{
 
-top:-20%;
 left:110%;
-
+top:-10%;
 opacity:0;
 
 }
@@ -224,10 +202,10 @@ opacity:1;
 }
 
 
-35%{
+40%{
 
-top:45%;
-left:55%;
+left:40%;
+top:40%;
 
 opacity:0;
 
@@ -246,44 +224,53 @@ opacity:0;
 
 /* Rose petals */
 
-
 .petal{
 
 position:absolute;
 
-width:10px;
+background:
 
-height:14px;
+linear-gradient(
+135deg,
+#8b0035,
+#300010
+);
 
-background:#750027;
+width:12px;
+
+height:18px;
 
 border-radius:
 100% 0 100% 0;
 
-
-opacity:.55;
-
+opacity:.6;
 
 filter:
-drop-shadow(0 0 3px #8b0030);
-
+drop-shadow(0 0 4px #8b0035);
 
 animation:
-fall linear infinite;
-
+petalFall linear infinite;
 
 }
 
 
-
-@keyframes fall{
+@keyframes petalFall{
 
 
 0%{
 
 transform:
-translateY(-10vh)
-rotate(0deg);
+translate3d(0,-10vh,0)
+rotate(0);
+
+}
+
+
+50%{
+
+transform:
+translate3d(70px,50vh,0)
+rotate(180deg);
 
 }
 
@@ -291,15 +278,99 @@ rotate(0deg);
 100%{
 
 transform:
-translateY(110vh)
-translateX(40px)
-rotate(450deg);
+translate3d(-40px,110vh,0)
+rotate(360deg);
+
+}
 
 }
 
 
+
+/* Constellations */
+
+.constellation{
+
+position:absolute;
+
+opacity:0;
+
+transition:
+opacity 4s ease;
+
 }
 
+
+.constellation.active{
+
+opacity:.7;
+
+}
+
+
+.point{
+
+position:absolute;
+
+width:3px;
+
+height:3px;
+
+background:white;
+
+border-radius:50%;
+
+box-shadow:
+0 0 8px white;
+
+}
+
+
+.line{
+
+position:absolute;
+
+height:1px;
+
+background:
+rgba(255,255,255,.25);
+
+transform-origin:left;
+
+}
+
+
+
+/* Messages */
+
+.star-message{
+
+position:absolute;
+
+color:white;
+
+font-family:serif;
+
+font-size:14px;
+
+letter-spacing:3px;
+
+opacity:0;
+
+transition:
+opacity 5s ease;
+
+text-shadow:
+0 0 10px white;
+
+}
+
+
+.star-message.show{
+
+opacity:.45;
+
+}
 
 
 </style>
@@ -313,13 +384,13 @@ rotate(450deg);
 <div class="moon"></div>
 
 
+
 <script>
 
 
 // Stars
 
-for(let i=0;i<250;i++){
-
+for(let i=0;i<300;i++){
 
 let star=document.createElement("div");
 
@@ -330,12 +401,13 @@ let size=Math.random()*2+0.5;
 
 
 star.style.width=size+"px";
+
 star.style.height=size+"px";
 
 
 star.style.left=Math.random()*100+"vw";
-star.style.top=Math.random()*100+"vh";
 
+star.style.top=Math.random()*100+"vh";
 
 
 if(Math.random()>.8){
@@ -350,77 +422,243 @@ Math.random()*5+"s";
 
 document.body.appendChild(star);
 
-
 }
 
 
 
 // Meteors
 
-function createMeteor(){
+function meteor(){
+
+let m=document.createElement("div");
+
+m.className="shooting";
+
+m.style.top=
+Math.random()*40+"vh";
+
+document.body.appendChild(m);
 
 
-let meteor=document.createElement("div");
+setTimeout(()=>m.remove(),5000);
 
-meteor.className="shooting";
-
-
-meteor.style.top=
-Math.random()*30+"vh";
+}
 
 
-meteor.style.left=
-Math.random()*80+"vw";
+setInterval(meteor,4500);
 
 
-meteor.style.animationDuration=
-(Math.random()*3+4)+"s";
+
+// Petals
+
+for(let i=0;i<18;i++){
+
+let p=document.createElement("div");
+
+p.className="petal";
 
 
-document.body.appendChild(meteor);
+p.style.left=
+Math.random()*100+"vw";
 
+
+p.style.animationDuration=
+(Math.random()*12+14)+"s";
+
+
+p.style.animationDelay=
+Math.random()*15+"s";
+
+
+document.body.appendChild(p);
+
+}
+
+
+
+// Constellations
+
+
+let messages=[
+
+"M + L",
+
+"Te amo Mayritangas",
+
+"Eres lo más especial para mí"
+
+];
+
+
+function constellation(){
+
+
+let c=document.createElement("div");
+
+c.className="constellation";
+
+
+c.style.left=
+(Math.random()*60+15)+"vw";
+
+
+c.style.top=
+(Math.random()*35+10)+"vh";
+
+
+let points=[
+
+[0,0],
+[35,20],
+[70,0],
+[35,55],
+[80,70]
+
+];
+
+
+points.forEach((p,i)=>{
+
+let star=document.createElement("div");
+
+star.className="point";
+
+star.style.left=p[0]+"px";
+
+star.style.top=p[1]+"px";
+
+
+c.appendChild(star);
+
+
+if(i>0){
+
+let line=document.createElement("div");
+
+line.className="line";
+
+
+let prev=points[i-1];
+
+
+let distance=Math.sqrt(
+
+(p[0]-prev[0])**2+
+(p[1]-prev[1])**2
+
+);
+
+
+line.style.width=distance+"px";
+
+line.style.left=prev[0]+"px";
+
+line.style.top=prev[1]+"px";
+
+
+let angle=Math.atan2(
+
+p[1]-prev[1],
+p[0]-prev[0]
+
+);
+
+
+line.style.transform=
+`rotate(${angle}rad)`;
+
+
+c.appendChild(line);
+
+}
+
+
+});
+
+
+document.body.appendChild(c);
 
 
 setTimeout(()=>{
 
-meteor.remove();
+c.classList.add("active");
 
-},5000);
+},100);
+
+
+setTimeout(()=>{
+
+c.classList.remove("active");
+
+},9000);
+
+
+setTimeout(()=>{
+
+c.remove();
+
+},14000);
+
+}
+
+
+setInterval(constellation,12000);
+
+
+
+// Star messages
+
+
+function message(){
+
+
+let m=document.createElement("div");
+
+m.className="star-message";
+
+
+m.innerHTML=
+messages[
+Math.floor(Math.random()*messages.length)
+];
+
+
+m.style.left=
+(Math.random()*60+20)+"vw";
+
+
+m.style.top=
+(Math.random()*40+15)+"vh";
+
+
+document.body.appendChild(m);
+
+
+setTimeout(()=>{
+
+m.classList.add("show");
+
+},100);
+
+
+setTimeout(()=>{
+
+m.classList.remove("show");
+
+},6000);
+
+
+setTimeout(()=>{
+
+m.remove();
+
+},12000);
 
 
 }
 
 
-setInterval(createMeteor,4500);
-
-
-
-// Less rose petals
-
-for(let i=0;i<15;i++){
-
-
-let petal=document.createElement("div");
-
-petal.className="petal";
-
-
-petal.style.left=
-Math.random()*100+"vw";
-
-
-petal.style.animationDuration=
-(Math.random()*10+12)+"s";
-
-
-petal.style.animationDelay=
-Math.random()*15+"s";
-
-
-document.body.appendChild(petal);
-
-
-}
+setInterval(message,18000);
 
 
 </script>
