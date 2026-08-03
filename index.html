@@ -27,19 +27,10 @@ button{font:inherit}
 #background{
     position:absolute;
     inset:0;
-
     width:100%;
     height:100%;
-
-    object-fit:contain;      /* <-- was cover */
-
-    object-position:center bottom;
-
-    pointer-events:none;
-    user-select:none;
-    -webkit-user-drag:none;
-
-    z-index:0;
+    object-fit:cover;
+    object-position:center;
 }
 #sky{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;transition:filter 1.1s ease}
 #memory-aura{position:absolute;inset:-20%;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 42%,rgba(255,244,210,.18),rgba(255,229,182,.08) 28%,transparent 62%);filter:blur(28px);transform:scale(.92);transition:opacity 1.1s ease,transform 1.1s ease}
@@ -261,7 +252,7 @@ function getLayout(){
     const sw = scene.clientWidth;
     const sh = scene.clientHeight;
 
-    const scale = Math.min(
+    const scale = Math.max(
         sw / ORIGINAL_WIDTH,
         sh / ORIGINAL_HEIGHT
     );
@@ -269,10 +260,18 @@ function getLayout(){
     const renderedWidth = ORIGINAL_WIDTH * scale;
     const renderedHeight = ORIGINAL_HEIGHT * scale;
 
+    let offsetX = (sw - renderedWidth) / 2;
+    let offsetY = (sh - renderedHeight) / 2;
+
+    // Mobile adjustment
+    if(sw < 700){
+        offsetY += renderedHeight * 0.18;
+    }
+
     return{
         scale,
-        offsetX:(sw-renderedWidth)/2,
-        offsetY:(sh-renderedHeight)/2
+        offsetX,
+        offsetY
     };
 
 }
