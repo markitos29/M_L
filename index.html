@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Midnight Garden 🌙</title>
+
 
 <style>
 
@@ -14,253 +16,673 @@
     box-sizing:border-box;
 }
 
+
 body{
 
-height:100vh;
-overflow:hidden;
+    height:100vh;
+    overflow:hidden;
 
-background:
-radial-gradient(circle at 70% 15%, rgba(40,40,80,.18), transparent 35%),
-linear-gradient(
-180deg,
-#010107,
-#030314 55%,
-#000005
-);
+    background:
+    radial-gradient(circle at 70% 15%,
+    rgba(80,80,120,.15),
+    transparent 35%),
+
+    linear-gradient(
+    180deg,
+    #010106,
+    #030313 55%,
+    #000005
+    );
 
 }
 
 
-/* Moon */
+/* =====================
+        MOON
+===================== */
+
 
 .moon{
 
-position:absolute;
+    position:absolute;
 
-top:80px;
-right:100px;
+    top:70px;
+    right:110px;
 
-width:140px;
-height:140px;
+    width:150px;
+    height:150px;
 
-border-radius:50%;
+    border-radius:50%;
 
-background:
 
-radial-gradient(
-circle at 35% 35%,
-#d8d8d8,
-#999 65%,
-#555
-);
+    background:
+    radial-gradient(
+    circle at 35% 35%,
+    #ededdf,
+    #aaa,
+    #555
+    );
 
-opacity:.8;
 
-box-shadow:
+    opacity:.8;
 
-0 0 25px rgba(220,220,255,.35),
-0 0 80px rgba(180,180,255,.15);
+
+    box-shadow:
+
+    0 0 30px rgba(255,255,230,.35),
+    0 0 90px rgba(200,220,255,.2);
 
 }
+
 
 
 .moon::before{
 
-content:"";
+    content:"";
 
-position:absolute;
+    position:absolute;
 
-width:22px;
-height:22px;
+    width:25px;
+    height:25px;
 
-background:#777;
+    background:#777;
 
-border-radius:50%;
+    border-radius:50%;
 
-top:35px;
-left:35px;
+    top:40px;
+    left:35px;
 
-opacity:.4;
+    opacity:.35;
 
-box-shadow:
 
-45px 20px 0 7px #777,
-30px 75px 0 5px #555;
+    box-shadow:
+
+    50px 20px 0 8px #777,
+    35px 80px 0 5px #666;
 
 }
 
 
-/* Stars */
+
+/* =====================
+        STARS
+===================== */
+
 
 .star{
 
-position:absolute;
+    position:absolute;
 
-background:white;
+    background:white;
 
-border-radius:50%;
+    border-radius:50%;
 
-opacity:.4;
+    opacity:.35;
 
 }
+
 
 
 .star.glow{
 
-box-shadow:
-0 0 5px white,
-0 0 12px white;
+    box-shadow:
 
-animation:twinkle 4s infinite;
+    0 0 8px white;
+
+    animation:
+    twinkle 4s infinite;
 
 }
+
 
 
 @keyframes twinkle{
 
-0%,100%{
-opacity:.25;
-}
-
 50%{
-opacity:1;
+    opacity:1;
 }
 
 }
 
 
-/* Shooting stars */
 
-.shooting{
+/* =====================
+        LAKE
+===================== */
+
+
+.lake{
+
+    position:absolute;
+
+    bottom:0;
+
+    width:100%;
+
+    height:28%;
+
+
+    background:
+
+    linear-gradient(
+    180deg,
+    #10172e,
+    #020208
+    );
+
+    overflow:hidden;
+
+}
+
+
+
+.lake::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:40%;
+
+    top:-20px;
+
+    width:220px;
+
+    height:200px;
+
+
+    background:
+
+    linear-gradient(
+    rgba(255,255,220,.25),
+    transparent
+    );
+
+
+    filter:blur(25px);
+
+}
+
+
+
+.lake::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:100%;
+
+    height:100%;
+
+
+    background:
+
+    repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,.025) 12px
+    );
+
+
+    animation:
+
+    water 6s infinite linear;
+
+}
+
+
+
+@keyframes water{
+
+from{
+    transform:translateY(0);
+}
+
+to{
+    transform:translateY(15px);
+}
+
+}
+
+
+
+/* =====================
+        MIST
+===================== */
+
+
+.mist{
+
+    position:absolute;
+
+    bottom:25%;
+
+    width:120%;
+
+    height:90px;
+
+    left:-10%;
+
+
+    background:
+
+    rgba(255,255,255,.04);
+
+
+    filter:blur(25px);
+
+
+    animation:
+
+    fog 14s infinite alternate;
+
+}
+
+
+
+@keyframes fog{
+
+from{
+    transform:translateX(-60px);
+}
+
+to{
+    transform:translateX(60px);
+}
+
+}
+
+
+
+/* =====================
+        TREE
+===================== */
+
+
+.tree{
+
+    position:absolute;
+
+    bottom:24%;
+
+    left:10%;
+
+
+    width:80px;
+
+    height:280px;
+
+
+    background:#010103;
+
+}
+
+
+
+.tree::before{
+
+    content:"";
+
+    position:absolute;
+
+
+    width:280px;
+
+    height:220px;
+
+
+    background:#010103;
+
+
+    border-radius:50%;
+
+
+    top:-130px;
+
+    left:-100px;
+
+
+    box-shadow:
+
+    100px -30px 0 20px #010103,
+
+    -70px 40px 0 10px #010103;
+
+}
+
+
+
+.tree::after{
+
+    content:"";
+
+    position:absolute;
+
+
+    width:20px;
+
+    height:150px;
+
+
+    background:#050507;
+
+
+    right:-10px;
+
+    top:80px;
+
+
+    transform:rotate(20deg);
+
+}
+
+
+
+/* =====================
+        BENCH
+===================== */
+
+
+.bench{
+
+    position:absolute;
+
+    bottom:24%;
+
+    left:48%;
+
+    width:180px;
+
+    height:15px;
+
+
+    background:#24150d;
+
+
+    box-shadow:
+
+    0 0 10px rgba(255,200,150,.1);
+
+}
+
+
+
+.bench::before,
+.bench::after{
+
+    content:"";
+
+    position:absolute;
+
+
+    width:10px;
+
+    height:70px;
+
+
+    background:#150b07;
+
+
+    bottom:-65px;
+
+}
+
+
+.bench::before{
+
+    left:25px;
+
+}
+
+
+.bench::after{
+
+    right:25px;
+
+}
+
+
+
+/* =====================
+        COUPLE
+===================== */
+
+
+.person{
+
+    position:absolute;
+
+    bottom:24%;
+
+}
+
+
+
+.man{
+
+    left:51%;
+
+}
+
+
+
+.woman{
+
+    left:46%;
+
+}
+
+
+
+.body{
+
+    position:absolute;
+
+    width:35px;
+
+    height:80px;
+
+
+    background:#030305;
+
+
+    border-radius:20px 20px 5px 5px;
+
+}
+
+
+
+.head{
+
+    position:absolute;
+
+    width:45px;
+
+    height:45px;
+
+
+    background:#030305;
+
+
+    border-radius:50%;
+
+
+    top:-35px;
+
+    left:-5px;
+
+}
+
+
+
+/* curly hair */
+
+.woman .head::before{
+
+    content:"";
+
+    position:absolute;
+
+
+    width:55px;
+
+    height:55px;
+
+
+    background:#020204;
+
+
+    border-radius:50%;
+
+
+    left:-5px;
+
+    top:-5px;
+
+
+    box-shadow:
+
+    10px 10px 0 #020204,
+
+    -10px 15px 0 #020204;
+
+}
+
+
+
+/* leaning pose */
+
+.woman{
+
+    transform:
+    rotate(-8deg);
+
+}
+
+
+</style>
+</head>
+
+<body>
+
+
+<div class="moon"></div>
+
+<div class="tree"></div>
+
+<div class="lake"></div>
+
+<div class="mist"></div>
+
+
+<!-- Couple -->
+
+<div class="person man">
+    <div class="head"></div>
+    <div class="body"></div>
+</div>
+
+
+<div class="person woman">
+    <div class="head"></div>
+    <div class="body"></div>
+</div>
+
+
+
+<!-- Audio -->
+
+<audio id="song" src="song.mp3"></audio>
+
+<audio id="wind" src="wind.mp3" loop></audio>
+
+<audio id="crickets" src="crickets.mp3" loop></audio>
+
+
+<button id="musicBtn">
+🌙 Play
+</button>
+
+
+
+<style>
+
+
+#musicBtn{
 
 position:absolute;
 
-width:130px;
+bottom:30px;
 
-height:2px;
+left:50%;
+
+transform:translateX(-50%);
+
+padding:12px 25px;
+
+border-radius:30px;
+
+border:none;
 
 background:
-linear-gradient(
-90deg,
-transparent,
-white
-);
+rgba(255,255,255,.15);
 
-transform:rotate(-45deg);
+color:white;
 
-filter:
-drop-shadow(0 0 8px white);
+font-size:16px;
 
-opacity:0;
+backdrop-filter:blur(10px);
 
-animation:
-meteor 5s linear;
+cursor:pointer;
+
+z-index:20;
 
 }
 
 
-.shooting::after{
-
-content:"";
-
-position:absolute;
-
-right:0;
-
-top:-2px;
-
-width:6px;
-
-height:6px;
-
-background:white;
-
-border-radius:50%;
-
-box-shadow:
-0 0 15px white;
-
-}
-
-
-@keyframes meteor{
-
-
-0%{
-
-left:110%;
-top:-10%;
-opacity:0;
-
-}
-
-
-10%{
-
-opacity:1;
-
-}
-
-
-40%{
-
-left:40%;
-top:40%;
-
-opacity:0;
-
-}
-
-
-100%{
-
-opacity:0;
-
-}
-
-}
-
-
-
-/* Rose petals */
+/* petals */
 
 .petal{
 
 position:absolute;
 
+width:10px;
+
+height:15px;
+
 background:
 
 linear-gradient(
 135deg,
-#8b0035,
-#300010
+#9b0038,
+#35000f
 );
 
-width:12px;
-
-height:18px;
 
 border-radius:
+
 100% 0 100% 0;
 
-opacity:.6;
 
-filter:
-drop-shadow(0 0 4px #8b0035);
+opacity:.7;
 
 animation:
-petalFall linear infinite;
+
+fall linear infinite;
 
 }
 
 
-@keyframes petalFall{
-
+@keyframes fall{
 
 0%{
 
 transform:
-translate3d(0,-10vh,0)
+
+translateY(-10vh)
+translateX(0)
 rotate(0);
 
 }
@@ -269,7 +691,9 @@ rotate(0);
 50%{
 
 transform:
-translate3d(70px,50vh,0)
+
+translateY(50vh)
+translateX(80px)
 rotate(180deg);
 
 }
@@ -278,7 +702,9 @@ rotate(180deg);
 100%{
 
 transform:
-translate3d(-40px,110vh,0)
+
+translateY(110vh)
+translateX(-40px)
 rotate(360deg);
 
 }
@@ -287,171 +713,162 @@ rotate(360deg);
 
 
 
-/* Constellations */
+/* fireflies */
 
-.constellation{
-
-position:absolute;
-
-opacity:0;
-
-transition:
-opacity 4s ease;
-
-}
-
-
-.constellation.active{
-
-opacity:.7;
-
-}
-
-
-.point{
+.firefly{
 
 position:absolute;
 
-width:3px;
+width:4px;
 
-height:3px;
+height:4px;
 
-background:white;
+background:#fff5a0;
 
 border-radius:50%;
 
+
 box-shadow:
-0 0 8px white;
 
-}
+0 0 15px #fff5a0;
 
 
-.line{
+animation:
 
-position:absolute;
-
-height:1px;
-
-background:
-rgba(255,255,255,.25);
-
-transform-origin:left;
+float 8s infinite;
 
 }
 
 
 
-/* Messages */
+@keyframes float{
 
-.star-message{
 
-position:absolute;
+50%{
 
-color:white;
+transform:
 
-font-family:serif;
+translateY(-40px)
+translateX(30px);
 
-font-size:14px;
-
-letter-spacing:3px;
-
-opacity:0;
-
-transition:
-opacity 5s ease;
-
-text-shadow:
-0 0 10px white;
+opacity:.3;
 
 }
 
 
-.star-message.show{
+}
 
-opacity:.45;
+
+
+/* moonlight around couple */
+
+.person{
+
+filter:
+
+drop-shadow(0 0 8px rgba(255,255,220,.15));
 
 }
 
 
 </style>
 
-</head>
-
-
-<body>
-
-
-<div class="moon"></div>
-
 
 
 <script>
 
 
-// Stars
+// STARS
 
 for(let i=0;i<300;i++){
 
-let star=document.createElement("div");
 
-star.className="star";
+let s=document.createElement("div");
+
+s.className="star";
 
 
 let size=Math.random()*2+0.5;
 
 
-star.style.width=size+"px";
+s.style.width=size+"px";
 
-star.style.height=size+"px";
-
-
-star.style.left=Math.random()*100+"vw";
-
-star.style.top=Math.random()*100+"vh";
+s.style.height=size+"px";
 
 
-if(Math.random()>.8){
+s.style.left=Math.random()*100+"vw";
 
-star.classList.add("glow");
+s.style.top=Math.random()*75+"vh";
 
-star.style.animationDelay=
-Math.random()*5+"s";
+
+if(Math.random()>.82){
+
+s.classList.add("glow");
 
 }
 
 
-document.body.appendChild(star);
+document.body.appendChild(s);
+
 
 }
 
 
 
-// Meteors
+// SHOOTING STARS
+
 
 function meteor(){
+
 
 let m=document.createElement("div");
 
 m.className="shooting";
 
+
+m.style.position="absolute";
+
+m.style.width="140px";
+
+m.style.height="2px";
+
+m.style.background=
+"linear-gradient(90deg,transparent,white)";
+
+
+m.style.transform=
+"rotate(-45deg)";
+
+
 m.style.top=
 Math.random()*40+"vh";
+
+
+m.style.left="100%";
+
+
+m.style.animation=
+"meteor 4s linear";
+
 
 document.body.appendChild(m);
 
 
-setTimeout(()=>m.remove(),5000);
+setTimeout(()=>m.remove(),4000);
+
 
 }
 
 
-setInterval(meteor,4500);
+setInterval(meteor,5000);
 
 
 
-// Petals
+// PETALS
 
-for(let i=0;i<18;i++){
+
+for(let i=0;i<15;i++){
+
 
 let p=document.createElement("div");
 
@@ -463,7 +880,7 @@ Math.random()*100+"vw";
 
 
 p.style.animationDuration=
-(Math.random()*12+14)+"s";
+(Math.random()*12+15)+"s";
 
 
 p.style.animationDelay=
@@ -472,197 +889,126 @@ Math.random()*15+"s";
 
 document.body.appendChild(p);
 
-}
-
-
-
-// Constellations
-
-
-let messages=[
-
-"M + L",
-
-"Te amo Mayritangas",
-
-"Eres lo más especial para mí"
-
-];
-
-
-function constellation(){
-
-
-let c=document.createElement("div");
-
-c.className="constellation";
-
-
-c.style.left=
-(Math.random()*60+15)+"vw";
-
-
-c.style.top=
-(Math.random()*35+10)+"vh";
-
-
-let points=[
-
-[0,0],
-[35,20],
-[70,0],
-[35,55],
-[80,70]
-
-];
-
-
-points.forEach((p,i)=>{
-
-let star=document.createElement("div");
-
-star.className="point";
-
-star.style.left=p[0]+"px";
-
-star.style.top=p[1]+"px";
-
-
-c.appendChild(star);
-
-
-if(i>0){
-
-let line=document.createElement("div");
-
-line.className="line";
-
-
-let prev=points[i-1];
-
-
-let distance=Math.sqrt(
-
-(p[0]-prev[0])**2+
-(p[1]-prev[1])**2
-
-);
-
-
-line.style.width=distance+"px";
-
-line.style.left=prev[0]+"px";
-
-line.style.top=prev[1]+"px";
-
-
-let angle=Math.atan2(
-
-p[1]-prev[1],
-p[0]-prev[0]
-
-);
-
-
-line.style.transform=
-`rotate(${angle}rad)`;
-
-
-c.appendChild(line);
 
 }
 
 
-});
+
+// FIREFLIES
 
 
-document.body.appendChild(c);
+for(let i=0;i<20;i++){
 
 
-setTimeout(()=>{
+let f=document.createElement("div");
 
-c.classList.add("active");
-
-},100);
+f.className="firefly";
 
 
-setTimeout(()=>{
-
-c.classList.remove("active");
-
-},9000);
+f.style.left=
+Math.random()*100+"vw";
 
 
-setTimeout(()=>{
-
-c.remove();
-
-},14000);
-
-}
+f.style.top=
+Math.random()*70+"vh";
 
 
-setInterval(constellation,12000);
+f.style.animationDelay=
+Math.random()*5+"s";
 
 
-
-// Star messages
-
-
-function message(){
-
-
-let m=document.createElement("div");
-
-m.className="star-message";
-
-
-m.innerHTML=
-messages[
-Math.floor(Math.random()*messages.length)
-];
-
-
-m.style.left=
-(Math.random()*60+20)+"vw";
-
-
-m.style.top=
-(Math.random()*40+15)+"vh";
-
-
-document.body.appendChild(m);
-
-
-setTimeout(()=>{
-
-m.classList.add("show");
-
-},100);
-
-
-setTimeout(()=>{
-
-m.classList.remove("show");
-
-},6000);
-
-
-setTimeout(()=>{
-
-m.remove();
-
-},12000);
+document.body.appendChild(f);
 
 
 }
 
 
-setInterval(message,18000);
+
+// AUDIO SYSTEM
+
+
+const song=document.getElementById("song");
+
+const wind=document.getElementById("wind");
+
+const crickets=document.getElementById("crickets");
+
+const button=document.getElementById("musicBtn");
+
+
+wind.volume=.25;
+
+crickets.volume=.25;
+
+song.volume=0;
+
+
+
+// start night sounds
+
+wind.play().catch(()=>{});
+
+crickets.play().catch(()=>{});
+
+
+
+button.onclick=()=>{
+
+
+song.play();
+
+
+let fade=setInterval(()=>{
+
+
+if(wind.volume>.01){
+
+wind.volume-=.02;
+
+crickets.volume-=.02;
+
+
+}else{
+
+
+clearInterval(fade);
+
+
+}
+
+
+},300);
+
+
+
+let musicFade=setInterval(()=>{
+
+
+if(song.volume<.95){
+
+song.volume+=.03;
+
+}else{
+
+clearInterval(musicFade);
+
+}
+
+
+},300);
+
+
+
+button.innerHTML="❤️ Playing";
+
+
+};
+
 
 
 </script>
 
 
 </body>
+
 </html>
