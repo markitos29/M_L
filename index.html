@@ -166,3 +166,305 @@ function buildStars(){
 }
 
 buildStars();
+    function drawStars(time){
+
+    for(const star of stars){
+        star.draw(time);
+    }
+
+}
+
+const shootingStars=[];
+
+class ShootingStar{
+
+    constructor(){
+
+        this.reset();
+
+    }
+
+    reset(){
+
+        this.x=rand(w*0.1,w*0.9);
+
+        this.y=rand(20,h*0.35);
+
+        this.length=rand(120,220);
+
+        this.speed=rand(700,1000);
+
+        this.life=0;
+
+        this.maxLife=rand(0.9,1.4);
+
+        this.angle=Math.PI/4+rand(-0.12,0.12);
+
+    }
+
+    update(dt){
+
+        this.life+=dt;
+
+        this.x+=Math.cos(this.angle)*this.speed*dt;
+        this.y+=Math.sin(this.angle)*this.speed*dt;
+
+    }
+
+    draw(){
+
+        const alpha=Math.max(0,1-this.life/this.maxLife);
+
+        ctx.save();
+
+        ctx.globalAlpha=alpha;
+
+        ctx.lineWidth=2;
+
+        ctx.strokeStyle="rgba(255,255,255,.9)";
+
+        ctx.shadowBlur=12;
+
+        ctx.shadowColor="white";
+
+        ctx.beginPath();
+
+        ctx.moveTo(this.x,this.y);
+
+        ctx.lineTo(
+            this.x-Math.cos(this.angle)*this.length,
+            this.y-Math.sin(this.angle)*this.length
+        );
+
+        ctx.stroke();
+
+        ctx.restore();
+
+    }
+
+    get dead(){
+
+        return this.life>=this.maxLife;
+
+    }
+
+}
+
+let nextMeteor=rand(8,20);
+
+let last=performance.now();
+
+function animate(now){
+
+    const dt=(now-last)/1000;
+
+    last=now;
+
+    ctx.clearRect(0,0,w,h);
+
+    const t=now*0.001;
+
+    drawStars(t);
+
+    updateConstellations(dt);
+drawConstellations();
+
+    nextMeteor-=dt;
+
+    if(nextMeteor<=0 && shootingStars.length<2){
+
+        shootingStars.push(new ShootingStar());
+
+        nextMeteor=rand(8,20);
+
+    }
+
+    for(let i=shootingStars.length-1;i>=0;i--){
+
+        const s=shootingStars[i];
+
+        s.update(dt);
+
+        s.draw();
+
+        if(s.dead){
+
+            shootingStars.splice(i,1);
+
+        }
+
+    }
+
+    requestAnimationFrame(animate);
+
+}
+// ------------------------
+// Constellations
+// ------------------------
+
+let constellationTimer = rand(20, 40);
+let constellationAlpha = 0;
+let constellationVisible = false;
+let constellationHold = 0;
+let constellation = [];
+
+function distance(a, b) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function createRandomConstellation() {
+
+    constellation = [];
+
+    const start = stars[Math.floor(rand(0, stars.length))];
+
+    constellation.push(start);
+
+    let current = start;
+
+    for (let i = 0; i < 5; i++) {
+
+        let nearest = null;
+        let best = 999999;
+
+        for (const star of stars) {
+
+            if (constellation.includes(star)) continue;
+
+            const d = distance(current, star);
+
+            if (d < best && d < 140) {
+                best = d;
+                nearest = star;
+            }
+
+        }
+
+        if (!nearest) break;
+
+        constellation.push(nearest);
+        current = nearest;
+
+    }
+
+}
+
+function createMLConstellation() {
+
+    const x = rand(w * 0.15, w * 0.55);
+    const y = rand(h * 0.10, h * 0.30);
+
+    constellation = [
+
+        { x:x, y:y },
+        { x:x+12, y:y+30 },
+        { x:x+24, y:y },
+        { x:x+36, y:y+30 },
+        { x:x+48, y:y },
+
+        { x:x+65, y:y+15 },
+
+        { x:x+82, y:y },
+        { x:x+82, y:y+30 },
+        { x:x+106, y:y+30 }
+
+    ];
+
+}
+
+function updateConstellations(dt){
+
+    constellationTimer -= dt;
+
+    if(!constellationVisible && constellationTimer <= 0){
+
+        if(Math.random() < 0.25){
+
+            createMLConstellation();
+
+        }else{
+
+            createRandomConstellation();
+
+        }
+
+        constellationVisible = true;
+        constellationAlpha = 0;
+        constellationHold = rand(3,5);
+
+        constellationTimer = rand(20,40);
+
+    }
+
+    if(constellationVisible){
+
+        if(constellationAlpha < 1 && constellationHold > 2.5){
+
+            constellationAlpha += dt * 0.5;
+
+        }
+
+        constellationHold -= dt;
+
+        if(constellationHold <= 0){
+
+            constellationAlpha -= dt * 0.5;
+
+            if(constellationAlpha <= 0){
+
+                constellationVisible = false;
+
+                constellation = [];
+
+            }
+
+        }
+
+    }
+
+}
+
+function drawConstellations(){
+
+    if(!constellationVisible || constellation.length < 2) return;
+
+    ctx.save();
+
+    ctx.globalAlpha = constellationAlpha * 0.45;
+
+    ctx.strokeStyle = "white";
+
+    ctx.lineWidth = 1;
+
+    ctx.shadowBlur = 8;
+
+    ctx.shadowColor = "white";
+
+    ctx.beginPath();
+
+    for(let i=0;i<constellation.length-1;i++){
+
+        ctx.moveTo(
+            constellation[i].x,
+            constellation[i].y
+        );
+
+        ctx.lineTo(
+            constellation[i+1].x,
+            constellation[i+1].y
+        );
+
+    }
+
+    ctx.stroke();
+
+    ctx.restore();
+
+}
+requestAnimationFrame(animate);
+    </script>
+
+</body>
+</html>
