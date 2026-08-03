@@ -200,6 +200,237 @@ body.memory-open #sky {
         brightness(1.9)
         drop-shadow(0 0 4px rgba(255, 255, 255, 0.62));
 }
+
+    <!-- =====================================================
+EDIT 1 — CSS
+
+Paste this directly ABOVE your closing </style> tag.
+===================================================== -->
+
+<style>
+#memory-caption{
+    position:absolute;
+    left:50%;
+    bottom:22px;
+    z-index:3;
+
+    width:min(86%,760px);
+
+    padding:12px 18px;
+
+    color:rgba(255,248,230,.96);
+
+    font-family:
+        "Snell Roundhand",
+        "Bradley Hand",
+        "Segoe Print",
+        cursive;
+
+    font-size:clamp(20px,3vw,36px);
+    font-weight:400;
+    line-height:1.25;
+    letter-spacing:.02em;
+    text-align:center;
+
+    text-shadow:
+        0 1px 3px rgba(0,0,0,.95),
+        0 0 10px rgba(0,0,0,.80),
+        0 0 18px rgba(255,224,170,.30);
+
+    transform:translate(-50%,18px);
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+        opacity .9s ease,
+        transform .9s ease;
+}
+
+#memory-caption.is-visible{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+#memory-card::before{
+    content:"";
+
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:2;
+
+    height:42%;
+
+    pointer-events:none;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(2,4,9,.82),
+            rgba(3,5,11,.40) 48%,
+            transparent 100%
+        );
+}
+
+@media(max-width:700px){
+    #memory-caption{
+        bottom:16px;
+        width:90%;
+        padding:10px 12px;
+        font-size:clamp(18px,5vw,28px);
+    }
+}
+</style>
+
+
+<!-- =====================================================
+EDIT 2 — MEMORIES
+
+Find your entire:
+
+const memories = [ ... ];
+
+Delete that whole memories section and replace it
+with this one.
+
+Keep your existing x/y positions if yours are different.
+===================================================== -->
+
+<script>
+const memories=[
+    {
+        type:"image",
+        file:"memory-1.jpg",
+        x:64,
+        y:630,
+        width:42,
+        height:57,
+        caption:"Ojalá pudiera revivir esta memoria."
+    },
+    {
+        type:"image",
+        file:"memory-2.jpeg",
+        x:126,
+        y:586,
+        width:42,
+        height:57,
+        caption:"No tenías idea de lo hermosa que te veías."
+    },
+    {
+        type:"image",
+        file:"memory-3.jpeg",
+        x:268,
+        y:642,
+        width:42,
+        height:57,
+        caption:"El día que sentí que ya éramos una familia."
+    },
+    {
+        type:"image",
+        file:"memory-4.jpeg",
+        x:323,
+        y:611,
+        width:42,
+        height:57,
+        caption:"Manejas mi vida, que no manejes mi troca. 😂"
+    },
+    {
+        type:"image",
+        file:"memory-5.jpeg",
+        x:366,
+        y:514,
+        width:42,
+        height:57,
+        caption:"Tu sonrisa lo es todo para mí."
+    },
+    {
+        type:"image",
+        file:"memory-6.jpeg",
+        x:445,
+        y:559,
+        width:42,
+        height:57,
+        caption:"Ojalá pudiéramos congelar el tiempo."
+    },
+    {
+        type:"image",
+        file:"memory-7.jpeg",
+        x:525,
+        y:588,
+        width:42,
+        height:57,
+        caption:"Todavía puedo escuchar nuestras risas."
+    },
+    {
+        type:"image",
+        file:"memory-8.JPG",
+        x:584,
+        y:548,
+        width:42,
+        height:57,
+        caption:"Esa mirada me derrite el corazón."
+    },
+    {
+        type:"video",
+        file:"memory-9.mp4",
+        x:633,
+        y:646,
+        width:42,
+        height:57,
+        caption:"Podría ver este video mil veces."
+    },
+    {
+        type:"video",
+        file:"memory-10.mp4",
+        x:680,
+        y:596,
+        width:42,
+        height:57,
+        caption:"Esta memoria me sigue haciendo sonreír cada vez que la veo."
+    }
+];
+</script>
+
+
+<!-- =====================================================
+EDIT 3 — JAVASCRIPT
+
+Find your existing function:
+
+function openMemory(state){
+
+Inside it, find these lines:
+
+memoryCard.replaceChildren();
+memoryCard.appendChild(createMemoryMedia(state.memory));
+
+Replace ONLY those two lines with this:
+===================================================== -->
+
+<script>
+memoryCard.replaceChildren();
+
+const memoryMedia=
+    createMemoryMedia(state.memory);
+
+const memoryCaption=
+    document.createElement("p");
+
+memoryCaption.id="memory-caption";
+memoryCaption.textContent=
+    state.memory.caption;
+
+memoryCard.appendChild(memoryMedia);
+memoryCard.appendChild(memoryCaption);
+
+window.setTimeout(()=>{
+    memoryCaption.classList.add(
+        "is-visible"
+    );
+},1100);
+</script>
 </style>
 
 
