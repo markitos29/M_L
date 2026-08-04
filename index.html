@@ -647,9 +647,25 @@ function createMemoryMedia(memory){
             document.createElement("video");
 
         video.src=memory.file;
-        video.controls=true;
+
+        video.autoplay=true;
+        video.loop=true;
+        video.controls=false;
         video.playsInline=true;
-        video.preload="metadata";
+        video.preload="auto";
+
+        video.muted=false;
+        video.volume=.28;
+
+        video.setAttribute(
+            "playsinline",
+            ""
+        );
+
+        video.setAttribute(
+            "webkit-playsinline",
+            ""
+        );
 
         video.addEventListener("play",()=>{
             if(
@@ -657,7 +673,7 @@ function createMemoryMedia(memory){
                 musicStarted &&
                 !musicMuted
             ){
-                fadeMusic(.07,700);
+                fadeMusic(.05,700);
             }
         });
 
@@ -681,9 +697,25 @@ function createMemoryMedia(memory){
             }
         });
 
+        video.play().catch(()=>{
+            /*
+             * Some iPhones require another tap if
+             * Low Power Mode blocks autoplay.
+             */
+        });
+
         return video;
     }
 
+    const image=
+        document.createElement("img");
+
+    image.src=memory.file;
+    image.alt="Memory";
+    image.draggable=false;
+
+    return image;
+}
     const image=
         document.createElement("img");
 
