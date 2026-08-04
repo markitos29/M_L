@@ -536,20 +536,58 @@ dot.animate([{opacity:0},{opacity:1,offset:.4},{opacity:0}],{duration:2600,delay
 }
 
 function createMemoryMedia(memory){
-if(memory.type==="video"){
-const video=document.createElement("video");
-video.src=memory.file;
-video.controls=true;
-video.playsInline=true;
-video.autoplay=true;
-video.muted=false;
-return video;
-}
-const image=document.createElement("img");
-image.src=memory.file;
-image.alt="Memory";
-image.draggable=false;
-return image;
+
+    if(memory.type==="video"){
+
+        const video=
+            document.createElement("video");
+
+        video.src=memory.file;
+        video.controls=true;
+        video.playsInline=true;
+        video.preload="metadata";
+
+        video.addEventListener("play",()=>{
+            if(
+                typeof fadeMusic==="function" &&
+                musicStarted &&
+                !musicMuted
+            ){
+                fadeMusic(.07,700);
+            }
+        });
+
+        video.addEventListener("pause",()=>{
+            if(
+                typeof fadeMusic==="function" &&
+                musicStarted &&
+                !musicMuted
+            ){
+                fadeMusic(.22,900);
+            }
+        });
+
+        video.addEventListener("ended",()=>{
+            if(
+                typeof fadeMusic==="function" &&
+                musicStarted &&
+                !musicMuted
+            ){
+                fadeMusic(.22,900);
+            }
+        });
+
+        return video;
+    }
+
+    const image=
+        document.createElement("img");
+
+    image.src=memory.file;
+    image.alt="Memory";
+    image.draggable=false;
+
+    return image;
 }
 
 function openMemory(state){
@@ -617,6 +655,21 @@ memoryCard.replaceChildren();
 memoryCard.removeAttribute("style");
 activeState=null;
 isTransitioning=false;
+
+    function closeMemory(){ const openedVideo=
+    memoryCard.querySelector("video");
+
+if(openedVideo){
+    openedVideo.pause();
+
+    if(
+        typeof fadeMusic==="function" &&
+        musicStarted &&
+        !musicMuted
+    ){
+        fadeMusic(.22,900);
+    }
+}
 });
 }
 
