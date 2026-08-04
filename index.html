@@ -545,7 +545,7 @@ const memories=[
         width:42,
         height:57,
         effect:"ripple",
-        caption:"Podría ver este video mil veces."
+        caption:"Esta memoria me sigue haciendo sonreír cada que la veo.
     },
     {
         type:"video",
@@ -555,7 +555,7 @@ const memories=[
         width:42,
         height:57,
         effect:"ml",
-        caption:"Esta memoria me sigue haciendo sonreír cada que la veo."
+        caption:"Podría ver este video mil veces."
     }
 ];
 
@@ -859,7 +859,7 @@ function createMemoryMedia(memory){
         video.playsInline=true;
         video.preload="auto";
         video.muted=false;
-        video.volume=.16;
+        video.volume=.27;
 
         video.setAttribute("playsinline","");
         video.setAttribute("webkit-playsinline","");
@@ -1205,9 +1205,9 @@ function startBeatAnimation(){
          * Bass boost: extra weight on the lowest frequencies
          * so the stars react harder to the song's beat.
          */
-        const bassBins=Math.min(28,beatData.length);
-        let total=0;
-        let totalWeight=0;
+        const bassBins=Math.min(45,beatData.length);
+        let total=.5;
+        let totalWeight=.5;
 
         for(let index=0;index<bassBins;index+=1){
             const weight=
@@ -1299,7 +1299,7 @@ async function startMusic(){
         musicButton.classList.add("is-playing");
         musicButton.classList.remove("is-muted");
 
-        fadeMusic(.22,1800);
+        fadeMusic(.12,700);
     }catch(error){
         musicButton.classList.remove("is-playing");
         musicButton.classList.add("is-muted");
