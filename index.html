@@ -230,77 +230,107 @@ const memoryClose=document.querySelector("#memory-close");
 const memoryDim=document.querySelector("#memory-dim");
 const effectLayer=document.querySelector("#effect-layer");
 
-const memories = [
-{
-    type:"image",
-    file:"memory-1.jpg",
-    x:64,y:630,width:42,height:57,
-    effect:"shooting",
-    caption:"Ojalá pudiera revivir esta memoria."
-},
-{
-    type:"image",
-    file:"memory-2.jpeg",
-    x:126,y:586,width:42,height:57,
-    effect:"constellation",
-    caption:"No tenías idea de lo hermosa que te veías."
-},
-{
-    type:"image",
-    file:"memory-3.jpeg",
-    x:268,y:642,width:42,height:57,
-    effect:"develop",
-    caption:"El día que sentí como si fuéramos una familia."
-},
-{
-    type:"image",
-    file:"memory-4.jpeg",
-    x:323,y:611,width:42,height:57,
-    effect:"heartbeat",
-    caption:"Manejas mi vida, que no manejes mi troca."
-},
-{
-    type:"image",
-    file:"memory-5.jpeg",
-    x:366,y:514,width:42,height:57,
-    effect:"moon",
-    caption:"Tu sonrisa lo es todo para mí."
-},
-{
-    type:"image",
-    file:"memory-6.jpeg",
-    x:445,y:559,width:42,height:57,
-    effect:"stardust",
-    caption:"Ojalá pudiéramos congelar el tiempo."
-},
-{
-    type:"image",
-    file:"memory-7.jpeg",
-    x:525,y:588,width:42,height:57,
-    effect:"vortex",
-    caption:"Todavía puedo escuchar nuestras risas."
-},
-{
-    type:"image",
-    file:"memory-8.JPG",
-    x:584,y:548,width:42,height:57,
-    effect:"fireflies",
-    caption:"Esa mirada me derrite el corazón."
-},
-{
-    type:"video",
-    file:"memory-9.mp4",
-    x:633,y:646,width:42,height:57,
-    effect:"ripple",
-    caption:"Podría ver este video mil veces."
-},
-{
-    type:"video",
-    file:"memory-10.mp4",
-    x:680,y:596,width:42,height:57,
-    effect:"ml",
-    caption:"Esta memoria me sigue haciendo sonreír cada que la veo."
-}
+const memories=[
+    {
+        type:"image",
+        file:"memory-1.jpg",
+        x:64,
+        y:630,
+        width:42,
+        height:57,
+        effect:"shooting",
+        caption:"Ojalá pudiera revivir esta memoria."
+    },
+    {
+        type:"image",
+        file:"memory-2.jpeg",
+        x:126,
+        y:586,
+        width:42,
+        height:57,
+        effect:"constellation",
+        caption:"No tenías idea de lo hermosa que te veías."
+    },
+    {
+        type:"image",
+        file:"memory-3.jpeg",
+        x:268,
+        y:642,
+        width:42,
+        height:57,
+        effect:"develop",
+        caption:"El día que sentí como si fuéramos una familia."
+    },
+    {
+        type:"image",
+        file:"memory-4.jpeg",
+        x:323,
+        y:611,
+        width:42,
+        height:57,
+        effect:"heartbeat",
+        caption:"Manejas mi vida, que no manejes mi troca 😂."
+    },
+    {
+        type:"image",
+        file:"memory-5.jpeg",
+        x:366,
+        y:514,
+        width:42,
+        height:57,
+        effect:"moon",
+        caption:"Tu sonrisa lo es todo para mí."
+    },
+    {
+        type:"image",
+        file:"memory-6.jpeg",
+        x:445,
+        y:559,
+        width:42,
+        height:57,
+        effect:"stardust",
+        caption:"Ojalá pudiéramos congelar el tiempo."
+    },
+    {
+        type:"image",
+        file:"memory-7.jpeg",
+        x:525,
+        y:588,
+        width:42,
+        height:57,
+        effect:"vortex",
+        caption:"Todavía puedo escuchar nuestras risas."
+    },
+    {
+        type:"image",
+        file:"memory-8.JPG",
+        x:584,
+        y:548,
+        width:42,
+        height:57,
+        effect:"fireflies",
+        caption:"Esa mirada me derrite el corazón."
+    },
+    {
+        type:"video",
+        file:"memory-9.mp4",
+        x:633,
+        y:646,
+        width:42,
+        height:57,
+        effect:"ripple",
+        caption:"Podría ver este video mil veces."
+    },
+    {
+        type:"video",
+        file:"memory-10.mp4",
+        x:680,
+        y:596,
+        width:42,
+        height:57,
+        effect:"ml",
+        caption:"Esta memoria me sigue haciendo sonreír cada que la veo."
+    }
 ];
 
 let activeState=null;
