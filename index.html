@@ -840,15 +840,15 @@ requestAnimationFrame(animatePolaroids);
 }
 
 function getTargetRect(){
-const padding=window.innerWidth<700?14:28;
+const padding=window.innerWidth<700?10:22;
 const availableWidth=window.innerWidth-padding*2;
 const availableHeight=window.innerHeight-padding*2;
-let width=Math.min(availableWidth,820);
-let height=width*.60;
-if(height>availableHeight*.78){height=availableHeight*.78;width=height/.60}
+let width=Math.min(availableWidth,1020);
+let height=width*.67;
+if(height>availableHeight*.88){height=availableHeight*.88;width=height/.67}
 return{
 left:(window.innerWidth-width)/2,
-top:window.innerHeight-height-padding-90,
+top:window.innerHeight-height-padding-30,
 width,
 height
 };
