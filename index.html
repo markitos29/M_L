@@ -48,8 +48,7 @@ button{font:inherit}
 #memory-card.is-active{display:block}
 #memory-card img,#memory-card video{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:#090b12;filter:brightness(.96) contrast(1.02) saturate(.94)}
 #memory-card::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(to bottom,rgba(5,8,16,.10),transparent 22%,transparent 74%,rgba(4,6,12,.24));box-shadow:inset 0 0 42px rgba(5,8,16,.34)}
-#memory-close{position:absolute;top:14px;right:14px;z-index:10;display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,.25);border-radius:50%;color:#fff;background:rgba(8,10,18,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;opacity:0;transform:scale(.85);transition:opacity .35s ease,transform .35s ease}
-#memory-close.is-visible{display:block;opacity:1;transform:scale(1)}
+
 body.memory-open #background{filter:blur(1.5px) brightness(.72) saturate(.92);transform:scale(1.006)}
 body.memory-open #sky{z-index:8;filter:brightness(1.8) drop-shadow(0 0 3px rgba(255,255,255,.5))}
 body.memory-open #memory-dim{opacity:1}
@@ -219,7 +218,6 @@ body.memory-open #memory-aura{opacity:1;transform:scale(1)}
 <div id="effect-layer" aria-hidden="true"></div>
 <div id="memory-stage">
 <div id="memory-card" role="dialog" aria-modal="true" aria-label="Memory"></div>
-<button id="memory-close" type="button" aria-label="Close memory">✕</button>
 </div>
 </main>
 
@@ -732,7 +730,7 @@ memoryCard.animate(
 ).finished.then(()=>{
 setCardRect(target);
 memoryCard.style.transform="none";
-memoryClose.classList.add("is-visible");
+
 isTransitioning=false;
 });
 });
@@ -756,7 +754,6 @@ fadeMusic(.22,900);
 }
 
 isTransitioning=true;
-memoryClose.classList.remove("is-visible");
 
 const current=memoryCard.getBoundingClientRect();
 const origin=activeState.element.getBoundingClientRect();
@@ -781,9 +778,43 @@ isTransitioning=false;
 });
 }
 
-memoryClose.addEventListener("click",closeMemory);
-memoryDim.addEventListener("click",closeMemory);
-memoryCard.addEventListener("click",(event)=>{if(event.target.tagName!=="VIDEO"){closeMemory()}});
+
+document.addEventListener("click",(event)=>{
+
+    if(!activeState){
+        return;
+    }
+
+    /*
+     * Ignore clicks inside the memory.
+     */
+    if(
+        memoryCard.contains(event.target)
+    ){
+        return;
+    }
+
+    closeMemory();
+
+});
+document.addEventListener("click",(event)=>{
+
+    if(!activeState){
+        return;
+    }
+
+    /*
+     * Ignore clicks inside the memory.
+     */
+    if(
+        memoryCard.contains(event.target)
+    ){
+        return;
+    }
+
+    closeMemory();
+
+});
 window.addEventListener("keydown",(event)=>{if(event.key==="Escape"){closeMemory()}});
 
 background.addEventListener("load",positionPolaroids);
