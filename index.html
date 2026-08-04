@@ -456,9 +456,60 @@ function positionPolaroids(){
 
 
 function positionMusicButton(){
+
     if(!musicButton){
         return;
     }
+
+    const layout=getLayout();
+
+    const isMobile=
+        window.innerWidth<=700;
+
+    const size=isMobile?48:58;
+
+    let x;
+    let y;
+
+    if(isMobile){
+
+        /*
+         * Mobile position:
+         * keeps the rose visible near the lower-right area
+         * where the bench/couple appears.
+         */
+        x=window.innerWidth-64;
+        y=window.innerHeight-92;
+
+    }else{
+
+        /*
+         * Desktop position:
+         * anchored beside the bench in the artwork.
+         */
+        x=
+            layout.offsetX+
+            1020*layout.scale;
+
+        y=
+            layout.offsetY+
+            890*layout.scale;
+
+    }
+
+    musicButton.style.width=
+        `${size}px`;
+
+    musicButton.style.height=
+        `${size}px`;
+
+    musicButton.style.left=
+        `${x-size/2}px`;
+
+    musicButton.style.top=
+        `${y-size/2}px`;
+
+}
 
     const layout=getLayout();
     const isMobile=window.innerWidth<=700;
