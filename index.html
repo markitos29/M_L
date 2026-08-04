@@ -1680,9 +1680,9 @@ function startBeatAnimation(){
          * Bass boost: extra weight on the lowest frequencies
          * so the stars react harder to the song's beat.
          */
-        const bassBins=Math.min(45,beatData.length);
-        let total=.5;
-        let totalWeight=.5;
+        const bassBins=Math.min(75,beatData.length);
+        let total=0;
+        let totalWeight=0;
 
         for(let index=0;index<bassBins;index+=1){
             const weight=
