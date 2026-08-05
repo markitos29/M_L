@@ -139,7 +139,10 @@ body.memory-open #scene-foreground-img{opacity:1;visibility:visible}
 
 #effect-layer{position:absolute;inset:0;z-index:7;pointer-events:none;overflow:hidden}
 #memory-stage{position:absolute;inset:0;z-index:6;pointer-events:none}
-#memory-card{position:absolute;transform-origin:top left;contain:layout paint style;left:0;top:0;display:none;width:42px;height:57px;padding:0;border:1px solid rgba(255,242,215,.45);border-radius:18px;background:rgba(8,10,16,.88);box-shadow:0 0 18px rgba(255,240,205,.34),0 0 55px rgba(255,222,170,.20),0 24px 65px rgba(0,0,0,.58);transform-origin:center;will-change:transform,opacity;pointer-events:auto;cursor:default;overflow:hidden}
+#memory-card{position:absolute;transform-origin:top left;contain:layout paint style;left:0;top:0;display:none;width:42px;height:57px;padding:0;border:1px solid rgba(255,242,215,.45);border-radius:18px;background:rgba(8,10,16,.88);box-shadow:
+0 0 28px rgba(255,238,205,.32),
+0 0 110px rgba(255,221,160,.20),
+0 35px 85px rgba(0,0,0,.60);transform-origin:center;will-change:transform,opacity;pointer-events:auto;cursor:default;overflow:hidden}
 #memory-card.is-active{display:block}
 #memory-card img,#memory-card video{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:#090b12;filter:brightness(.96) contrast(1.02) saturate(.94)}
 
@@ -159,6 +162,23 @@ body.memory-open #scene-foreground-img{opacity:1;visibility:visible}
 }
 
 #memory-card::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(to bottom,rgba(5,8,16,.10),transparent 22%,transparent 74%,rgba(4,6,12,.24));box-shadow:inset 0 0 42px rgba(5,8,16,.34)}
+#memory-card::before{
+content:"";
+position:absolute;
+pointer-events:none;
+inset:-170px;
+
+background:
+radial-gradient(circle at 92% 82%,
+rgba(255,225,165,.26) 0%,
+rgba(255,220,170,.12) 22%,
+rgba(255,220,170,.04) 46%,
+transparent 72%);
+
+filter:blur(70px);
+
+z-index:-1;
+}
 
 body.memory-open #background{filter:blur(1.5px) brightness(.72) saturate(.92);transform:scale(1.006)}
 body.memory-open #sky{z-index:8;filter:brightness(1.8) drop-shadow(0 0 4px rgba(255,255,255,.55))}
@@ -970,14 +990,15 @@ function getTargetRect(){
 const padding=window.innerWidth<700?10:22;
 const availableWidth=window.innerWidth-padding*2;
 const availableHeight=window.innerHeight-padding*2;
-let width=Math.min(availableWidth,1020);
+let width=Math.min(availableWidth,1180);
 let height=width*.67;
 if(height>availableHeight*.88){height=availableHeight*.88;width=height/.67}
 return{
-left:(window.innerWidth-width)/2,
-top:window.innerHeight-height-padding-30,
-width,
-height
+    left:viewportWidth*0.66-width/2,
+    top:viewportHeight*0.16,
+    width,
+    height
+};
 };
 }
 
@@ -1287,7 +1308,42 @@ requestAnimationFrame(()=>{
             triggerEffect(state.memory.effect);
             triggerMemoryStarBurst();
 
+const reflection=document.createElement("span");
 
+reflection.className="fx-ripple";
+
+Object.assign(reflection.style,{
+left:"72%",
+top:"76%",
+width:"260px",
+height:"50px",
+opacity:"0"
+});
+
+effectLayer.appendChild(reflection);
+
+reflection.animate(
+[
+{
+transform:"translate(-50%,0) scale(.3)",
+opacity:0
+},
+{
+opacity:.35,
+offset:.3
+},
+{
+transform:"translate(-50%,0) scale(1.35)",
+opacity:0
+}
+],
+{
+duration:2600,
+easing:"ease-out",
+fill:"forwards"
+}
+).finished.then(()=>reflection.remove());
+            
             isTransitioning=false;
         })
         .catch(()=>{
