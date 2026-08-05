@@ -372,25 +372,37 @@ body.beat-pulse #memory-aura{
 
 
 
-#letter-button{
+
+    #letter-button{
+    animation:letterFloat 4s ease-in-out infinite;
+}
+
+@keyframes letterFloat{
+    0%,100%{
+        transform:rotate(-3deg) translateY(0);
+    }
+
+    50%{
+        transform:rotate(2deg) translateY(-2px);
+    }
+}
     position:absolute;
     z-index:50;
-    width:54px;
-    height:54px;
+    width:32px;
+    height:32px;
     padding:0;
-    border:1px solid rgba(255,235,220,.45);
-    border-radius:50%;
-    background:rgba(22,8,15,.48);
+    border:none;
+    border-radius:0;
+    background:transparent;
     color:#fff;
     font-size:27px;
     line-height:1;
     display:grid;
     place-items:center;
     cursor:pointer;
-    box-shadow:
-        0 0 14px rgba(255,140,175,.30),
-        0 0 30px rgba(190,45,90,.18),
-        0 6px 18px rgba(0,0,0,.48);
+    box-shadow:none;
+    font-size:22px;
+    filter:drop-shadow(0 2px 5px rgba(0,0,0,.45));
     backdrop-filter:blur(8px);
     -webkit-backdrop-filter:blur(8px);
     transition:transform .25s ease,box-shadow .25s ease,opacity .25s ease;
@@ -595,8 +607,8 @@ const HANGING_OFFSET=45;
  */
 const MUSIC_BUTTON_X=1015;
 const MUSIC_BUTTON_Y=895;
-const LETTER_BUTTON_X=930;
-const LETTER_BUTTON_Y=895;
+const LETTER_BUTTON_X=708;
+const LETTER_BUTTON_Y=835;
 
 const scene=document.querySelector("#scene");
 const background=document.querySelector("#background");
