@@ -1755,7 +1755,7 @@ let dpr=1;
 let last=performance.now();
 let nextMeteor=14+Math.random()*26;
 let nextDustBurst=2+Math.random()*4;
-let nextSecretAt=performance.now()+120000+Math.random()*120000;
+let nextSecretAt=performance.now()+20000+Math.random()*20000;
 
 const stars=[];
 const meteors=[];
@@ -2014,7 +2014,7 @@ function drawSecretConstellation(now){
 
     if(elapsed>=duration){
         secretStars.length=0;
-        nextSecretAt=now+120000+Math.random()*120000;
+        nextSecretAt=now+20000+Math.random()*20000;
         return;
     }
 
