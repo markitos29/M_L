@@ -987,19 +987,29 @@ requestAnimationFrame(animatePolaroids);
 }
 
 function getTargetRect(){
-const padding=window.innerWidth<700?10:22;
-const availableWidth=window.innerWidth-padding*2;
-const availableHeight=window.innerHeight-padding*2;
-let width=Math.min(availableWidth,1180);
-let height=width*.67;
-if(height>availableHeight*.88){height=availableHeight*.88;width=height/.67}
-return{
-    left:viewportWidth*0.66-width/2,
-    top:viewportHeight*0.16,
-    width,
-    height
-};
-};
+
+    const padding = window.innerWidth < 700 ? 10 : 22;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const availableWidth = viewportWidth - padding * 2;
+    const availableHeight = viewportHeight - padding * 2;
+
+    let width = Math.min(availableWidth, 1180);
+    let height = width * .67;
+
+    if(height > availableHeight * .88){
+        height = availableHeight * .88;
+        width = height / .67;
+    }
+
+    return{
+        left: viewportWidth * 0.66 - width / 2,
+        top: viewportHeight * 0.16,
+        width,
+        height
+    };
 }
 
 function setCardRect(rect){
