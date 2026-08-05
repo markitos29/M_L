@@ -613,7 +613,7 @@ body.memory-open #letter-button{
 
 const ORIGINAL_WIDTH=2556;
 const ORIGINAL_HEIGHT=1179;
-const HANGING_OFFSET=45;
+const HANGING_OFFSET=0;
 const MUSIC_VOLUME_NORMAL=.28;
 const MUSIC_VOLUME_VIDEO=.19;
 const VIDEO_VOLUME=.48;
@@ -644,8 +644,8 @@ const memories=[
         file:"memory-1.jpg",
         x:64,
         y:630,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"shooting",
         caption:"Ojalá pudiera revivir esta memoria."
     },
@@ -654,8 +654,8 @@ const memories=[
         file:"memory-2.jpeg",
         x:126,
         y:586,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"constellation",
         caption:"No tenías idea de lo hermosa que te veías."
     },
@@ -664,8 +664,8 @@ const memories=[
         file:"memory-3.jpeg",
         x:268,
         y:642,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"none",
         caption:"El día que sentí como si fuéramos una familia."
     },
@@ -674,8 +674,8 @@ const memories=[
         file:"memory-4.jpeg",
         x:323,
         y:611,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"heartbeat",
         caption:"Manejas mi vida, que no manejes mi troca 😂."
     },
@@ -684,8 +684,8 @@ const memories=[
         file:"memory-5.jpeg",
         x:366,
         y:514,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"moon",
         caption:"Tu sonrisa lo es todo para mí."
     },
@@ -694,8 +694,8 @@ const memories=[
         file:"memory-6.jpeg",
         x:445,
         y:559,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"stardust",
         caption:"Ojalá pudiéramos congelar el tiempo."
     },
@@ -704,8 +704,8 @@ const memories=[
         file:"memory-7.jpeg",
         x:525,
         y:588,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"vortex",
         caption:"Todavía puedo escuchar nuestras risas."
     },
@@ -714,8 +714,8 @@ const memories=[
         file:"memory-8.JPG",
         x:584,
         y:548,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"fireflies",
         caption:"Esa mirada me derrite el corazón."
     },
@@ -724,8 +724,8 @@ const memories=[
         file:"memory-9.mp4",
         x:633,
         y:646,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"ripple",
         caption:"Esta memoria me sigue haciendo sonreír cada que la veo."
     },
@@ -734,8 +734,8 @@ const memories=[
         file:"memory-10.mp4",
         x:680,
         y:596,
-        width:42,
-        height:57,
+        width:56,
+        height:76,
         effect:"stardust",
         caption:"Podría ver este video mil veces."
     }
@@ -777,8 +777,8 @@ media.draggable=false;
 media.className="polaroid-media";
 card.appendChild(media);
 button.appendChild(card);
-layer.appendChild(button);
-const state={element:button,memory,phase:Math.random()*Math.PI*2,secondPhase:Math.random()*Math.PI*2,speed:.00035+Math.random()*.00018,swayAmount:2.2+Math.random()*1.8,liftAmount:.6+Math.random()*.7};
+layer.appendChild(button)
+const state={element:button,memory,phase:Math.random()*Math.PI*2,secondPhase:Math.random()*Math.PI*2,speed:.00035+Math.random()*.00018,swayAmount:1.0+Math.random()*0.6,liftAmount:.25+Math.random()*.25};
 button.addEventListener("click",(event)=>{event.stopPropagation();if(!isTransitioning&&!activeState){openMemory(state)}});
 return state;
 });
@@ -858,20 +858,28 @@ function positionPolaroids(){
                 ?Math.max(layout.scale,.72)
                 :layout.scale);
 
-        const x=
-            layout.offsetX+
-            m.x*layout.scale;
+        const x =
+    layout.offsetX +
+    m.x * layout.scale +
+    18 * layout.scale;
 
         const y=
             layout.offsetY+
             m.y*layout.scale+
             HANGING_OFFSET*layout.scale;
 
-        state.element.style.left=
-            `${x-(width-m.width*layout.scale)/2}px`;
 
-        state.element.style.top=
-            `${y}px`;
+
+// Center the polaroid on the string horizontally
+state.element.style.left =
+    `${x - width / 2}px`;
+
+// Hang the polaroid from the string instead of placing its top on it
+state.element.style.top =
+    `${y - height * 0.12}px`;
+
+
+        
 
         state.element.style.width=
             `${width}px`;
