@@ -351,10 +351,27 @@ body.memory-open #memory-aura{opacity:1;transform:scale(1)}
 }
 
 @keyframes heartBreathing{
-    0%,100%{transform:scale(1)}
-    42%{transform:scale(1.10)}
-    56%{transform:scale(1.04)}
-    72%{transform:scale(1.085)}
+
+    0%,100%{
+        transform:rotate(-12deg) scale(1);
+    }
+
+    18%{
+        transform:rotate(-12deg) scale(1.06);
+    }
+
+    35%{
+        transform:rotate(-12deg) scale(1.12);
+    }
+
+    52%{
+        transform:rotate(-12deg) scale(1.05);
+    }
+
+    72%{
+        transform:rotate(-12deg) scale(1.09);
+    }
+
 }
 
 #music-button:hover img{
@@ -682,8 +699,8 @@ const VIDEO_VOLUME=.48;
  * Rose button location in the original 1448 × 1086 artwork.
  * These coordinates place it beside the bench/couple.
  */
-const MUSIC_BUTTON_X=720;
-const MUSIC_BUTTON_Y=710;
+const MUSIC_BUTTON_X=315;
+const MUSIC_BUTTON_Y=690;
 const LETTER_BUTTON_X=140;
 const LETTER_BUTTON_Y=675;
 
@@ -956,7 +973,7 @@ function positionMusicButton(){
 
     const layout=getArtworkLayout();
     const phone=isPhoneLayout();
-    const size=phone ? 72 : 82;
+    const size=phone ? 60 : 70;
 
     const centerX=
         layout.offsetX+
