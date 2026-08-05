@@ -29,7 +29,7 @@ button{font:inherit}
     inset:0;
     width:100%;
     height:100%;
-    object-fit:cover;
+    object-fit:contain;
     object-position:center;
 }
 
@@ -576,14 +576,13 @@ body.memory-open #letter-button{
 </div>
 
 <main id="scene">
-<img id="background" src="background-clean.jpg" alt="" draggable="false">
+<img id="background" src="background-clean.PNG" alt="" draggable="false">
 <canvas id="lake-waves" aria-hidden="true"></canvas>
 <div id="moon-halo" aria-hidden="true"></div>
 <canvas id="sky" aria-hidden="true"></canvas>
 <div id="memory-aura" aria-hidden="true"></div>
 <div id="polaroid-layer" aria-label="Our memories"></div>
 <div id="memory-dim" aria-hidden="true"></div>
-<img id="scene-foreground-img" src="foreground-couple-tree-clean.png" alt="" draggable="false">
 <div id="effect-layer" aria-hidden="true"></div>
 <div id="memory-stage">
 <div id="memory-card" role="dialog" aria-modal="true" aria-label="Memory"></div>
@@ -611,8 +610,8 @@ body.memory-open #letter-button{
 <script>
 "use strict";
 
-const ORIGINAL_WIDTH=1448;
-const ORIGINAL_HEIGHT=1086;
+const ORIGINAL_WIDTH=2556;
+const ORIGINAL_HEIGHT=1179;
 const HANGING_OFFSET=45;
 const MUSIC_VOLUME_NORMAL=.28;
 const MUSIC_VOLUME_VIDEO=.19;
@@ -811,7 +810,7 @@ function getLayout(){
     const sw = scene.clientWidth;
     const sh = scene.clientHeight;
 
-    const scale = Math.max(
+    const scale = Math.min(
         sw / ORIGINAL_WIDTH,
         sh / ORIGINAL_HEIGHT
     );
