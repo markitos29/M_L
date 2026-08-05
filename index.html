@@ -866,17 +866,21 @@ function positionPolaroids(){
 
         const m=state.memory;
 
-        const width=
-            m.width*
-            (isMobile
-                ?Math.max(layout.scale,.72)
-                :layout.scale);
+const POLAROID_SCALE = 0.75;
 
-        const height=
-            m.height*
-            (isMobile
-                ?Math.max(layout.scale,.72)
-                :layout.scale);
+const width =
+    m.width *
+    POLAROID_SCALE *
+    (isMobile
+        ? Math.max(layout.scale,.72)
+        : layout.scale);
+
+const height =
+    m.height *
+    POLAROID_SCALE *
+    (isMobile
+        ? Math.max(layout.scale,.72)
+        : layout.scale);
 
         const x =
     layout.offsetX +
