@@ -29,8 +29,9 @@ button{font:inherit}
     inset:0;
     width:100%;
     height:100%;
-    object-fit:contain;
-    object-position:center;
+    object-fit:cover;
+    object-position:center center;
+    pointer-events:none;
 }
 
 #lake-waves{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none;opacity:.98}
@@ -810,7 +811,7 @@ function getLayout(){
     const sw = scene.clientWidth;
     const sh = scene.clientHeight;
 
-    const scale = Math.min(
+    const scale = Math.max(
         sw / ORIGINAL_WIDTH,
         sh / ORIGINAL_HEIGHT
     );
