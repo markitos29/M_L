@@ -200,7 +200,8 @@ body.memory-open #memory-aura{opacity:1;transform:scale(1)}
     @media (max-width:700px){
 
     #scene{
-        height:100dvh;
+        /* Stable while Safari's address bar expands or collapses. */
+        height:100svh;
     }
 
     #background{
@@ -614,8 +615,8 @@ const HANGING_OFFSET=45;
  */
 const MUSIC_BUTTON_X=1015;
 const MUSIC_BUTTON_Y=895;
-const LETTER_BUTTON_X=386;
-const LETTER_BUTTON_Y=824;
+const LETTER_BUTTON_X=374;
+const LETTER_BUTTON_Y=850;
 
 const scene=document.querySelector("#scene");
 const background=document.querySelector("#background");
@@ -878,44 +879,39 @@ function positionMusicButton(){
         return;
     }
 
-    const layout=getLayout();
+    const layout=getArtworkLayout();
     const isMobile=window.innerWidth<=700;
     const size=isMobile?48:58;
 
-    let centerX=
+    const centerX=
         layout.offsetX+
         MUSIC_BUTTON_X*layout.scale;
 
-    let centerY=
+    const centerY=
         layout.offsetY+
         MUSIC_BUTTON_Y*layout.scale;
-
-    /*
-     * Keep the rose visible on narrow iPhones even when
-     * the artwork is cropped.
-     */
-    const edgePadding=10;
-
-    centerX=Math.max(
-        edgePadding+size/2,
-        Math.min(
-            window.innerWidth-edgePadding-size/2,
-            centerX
-        )
-    );
-
-    centerY=Math.max(
-        edgePadding+size/2,
-        Math.min(
-            window.innerHeight-edgePadding-size/2,
-            centerY
-        )
-    );
 
     musicButton.style.width=`${size}px`;
     musicButton.style.height=`${size}px`;
     musicButton.style.left=`${centerX-size/2}px`;
     musicButton.style.top=`${centerY-size/2}px`;
+}
+
+function getArtworkLayout(){
+    const width=scene.clientWidth;
+    const height=scene.clientHeight;
+    const isMobile=width<=700;
+    const scale=isMobile
+        ?Math.min(width/ORIGINAL_WIDTH,height/ORIGINAL_HEIGHT)
+        :Math.max(width/ORIGINAL_WIDTH,height/ORIGINAL_HEIGHT);
+    const renderedWidth=ORIGINAL_WIDTH*scale;
+    const renderedHeight=ORIGINAL_HEIGHT*scale;
+
+    return{
+        scale,
+        offsetX:(width-renderedWidth)/2,
+        offsetY:isMobile?height-renderedHeight:(height-renderedHeight)/2
+    };
 }
 
 
@@ -924,23 +920,11 @@ function positionLetterButton(){
         return;
     }
 
-    const layout=getLayout();
+    const layout=getArtworkLayout();
     const isMobile=window.innerWidth<=700;
     const size=isMobile?29:32;
-    const edgePadding=10;
-
-    let centerX=layout.offsetX+LETTER_BUTTON_X*layout.scale;
-    let centerY=layout.offsetY+LETTER_BUTTON_Y*layout.scale;
-
-    centerX=Math.max(
-        edgePadding+size/2,
-        Math.min(window.innerWidth-edgePadding-size/2,centerX)
-    );
-
-    centerY=Math.max(
-        edgePadding+size/2,
-        Math.min(window.innerHeight-edgePadding-size/2,centerY)
-    );
+    const centerX=layout.offsetX+LETTER_BUTTON_X*layout.scale;
+    const centerY=layout.offsetY+LETTER_BUTTON_Y*layout.scale;
 
     letterButton.style.width=`${size}px`;
     letterButton.style.height=`${size}px`;
@@ -1096,7 +1080,7 @@ function createMemoryMedia(memory){
         video.playsInline=true;
         video.preload=memory.noPoster?"auto":"metadata";
         video.muted=false;
-        video.volume=.55;
+        video.volume=.50;
 
         video.setAttribute("playsinline","");
         video.setAttribute("webkit-playsinline","");
@@ -1111,43 +1095,6 @@ function createMemoryMedia(memory){
             video.addEventListener("loadeddata",showLetterVideo,{once:true});
             video.addEventListener("playing",showLetterVideo,{once:true});
         }
-
-        let musicDuckedForVideo=false;
-
-        const keepMixedAudioAlive=()=>{
-            if(audioContext){
-                if(audioContext.state==="suspended"){
-                    audioContext.resume().catch(()=>{});
-                }
-
-                wireVideoToAudioGraph(video);
-            }
-
-            if(
-                !musicDuckedForVideo&&
-                musicStarted&&
-                !musicMuted
-            ){
-                musicDuckedForVideo=true;
-
-                /*
-                 * Keep the song clearly present but very soft
-                 * under the video instead of silencing it.
-                 */
-                fadeMusic(.09,700);
-            }
-
-            if(
-                backgroundMusic.paused&&
-                musicStarted&&
-                !musicMuted
-            ){
-                backgroundMusic.play().catch(()=>{});
-            }
-        };
-
-        video.addEventListener("play",keepMixedAudioAlive,{once:true});
-        video.addEventListener("playing",keepMixedAudioAlive);
 
         return video;
     }
@@ -1209,6 +1156,40 @@ function triggerMemoryStarBurst(){
     }
 }
 
+async function playOpenedVideo(video){
+    /* A single playback path owns both media elements on mobile Safari. */
+    setupBeatDetection();
+    wireVideoToAudioGraph(video);
+
+    try{
+        if(audioContext&&audioContext.state==="suspended"){
+            await audioContext.resume();
+        }
+
+        if(musicStarted&&!musicMuted&&backgroundMusic.paused){
+            await backgroundMusic.play();
+        }
+
+        if(musicStarted&&!musicMuted){
+            fadeMusic(.13,700);
+        }
+
+        video.currentTime=0;
+        await video.play();
+
+        /* Safari can suspend the shared context as video playback begins. */
+        if(audioContext&&audioContext.state==="suspended"){
+            await audioContext.resume();
+        }
+
+        if(musicStarted&&!musicMuted&&backgroundMusic.paused){
+            await backgroundMusic.play();
+        }
+    }catch(error){
+        console.error("Video playback was blocked.",error);
+    }
+}
+
 function openMemory(state){
 if(isTransitioning||activeState){return}
 
@@ -1229,15 +1210,7 @@ memoryCard.appendChild(media);
 memoryCard.appendChild(caption);
 
 if(media.tagName==="VIDEO"){
-    if(audioContext&&audioContext.state==="suspended"){
-        audioContext.resume().catch(()=>{});
-    }
-
-    wireVideoToAudioGraph(media);
-    media.currentTime=0;
-    media.play().catch((error)=>{
-        console.error("Video autoplay was blocked.",error);
-    });
+    playOpenedVideo(media);
 }
 
 setCardRect(target);
@@ -1883,7 +1856,7 @@ function wireVideoToAudioGraph(video){
         const source=audioContext.createMediaElementSource(video);
         const gain=audioContext.createGain();
 
-        gain.gain.value=.58;
+        gain.gain.value=.52;
         source.connect(gain);
         gain.connect(audioContext.destination);
 
