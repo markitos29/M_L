@@ -1739,36 +1739,7 @@ const LAKE_BOTTOM=[[1448,970],[1260,975],[1080,970],[900,955],[720,936],[560,920
 function resizeLake(){lakeDpr=Math.min(window.devicePixelRatio||1,2);lakeW=window.innerWidth;lakeH=window.innerHeight;lakeCanvas.width=Math.round(lakeW*lakeDpr);lakeCanvas.height=Math.round(lakeH*lakeDpr);lakeCanvas.style.width=`${lakeW}px`;lakeCanvas.style.height=`${lakeH}px`;lakeCtx.setTransform(lakeDpr,0,0,lakeDpr,0,0)}
 function lakeLayout(){const mobile=window.innerWidth<=700;const scale=mobile?Math.min(lakeW/ORIGINAL_WIDTH,lakeH/ORIGINAL_HEIGHT):Math.max(lakeW/ORIGINAL_WIDTH,lakeH/ORIGINAL_HEIGHT);const renderedWidth=ORIGINAL_WIDTH*scale,renderedHeight=ORIGINAL_HEIGHT*scale;return{scale,renderedWidth,renderedHeight,offsetX:(lakeW-renderedWidth)/2,offsetY:mobile?lakeH-renderedHeight:(lakeH-renderedHeight)/2}}
 function traceLake(layout){lakeCtx.beginPath();LAKE_TOP.forEach(([x,y],i)=>{const sx=layout.offsetX+x*layout.scale,sy=layout.offsetY+y*layout.scale;i?lakeCtx.lineTo(sx,sy):lakeCtx.moveTo(sx,sy)});LAKE_BOTTOM.forEach(([x,y])=>lakeCtx.lineTo(layout.offsetX+x*layout.scale,layout.offsetY+y*layout.scale));lakeCtx.closePath()}
-function spawnDrop(now,layout){
-    const spots=[
-        [880,900],
-        [1010,915],
-        [1140,905],
-        [1270,920],
-        [1390,895]
-    ];
-
-    const [ix,iy]=
-        spots[Math.floor(Math.random()*spots.length)];
-
-    const x=
-        layout.offsetX+
-        (ix+(Math.random()-.5)*60)*
-        layout.scale;
-
-    const y=
-        layout.offsetY+
-        (iy+(Math.random()-.5)*10+18)*
-        layout.scale;
-
-    lakeDrops.push({
-        x,
-        y:y-11*layout.scale,
-        targetY:y,
-        born:now,
-        life:500
-    });
-}
+function spawnDrop(now,layout){const spots=[[760,850],[900,875],[1040,860],[1180,890],[1320,845]];const [ix,iy]=spots[Math.floor(Math.random()*spots.length)];const x=layout.offsetX+(ix+(Math.random()-.5)*70)*layout.scale,y=layout.offsetY+(iy+(Math.random()-.5)*24)*layout.scale;lakeDrops.push({x,y:y-11*layout.scale,targetY:y,born:now,life:500})}
 function drawDrops(now){for(let i=lakeDrops.length-1;i>=0;i--){const d=lakeDrops[i],p=(now-d.born)/d.life;if(p>=1){lakeRipples.push({x:d.x,y:d.targetY,born:now,life:2400,max:35+Math.random()*24});lakeDrops.splice(i,1);continue}const y=d.y+(d.targetY-d.y)*p*p;lakeCtx.beginPath();lakeCtx.ellipse(d.x,y,1.2,3.1,0,0,Math.PI*2);lakeCtx.fillStyle=`rgba(255,241,215,${.55*(1-p*.3)})`;lakeCtx.shadowBlur=5;lakeCtx.shadowColor="rgba(255,230,190,.4)";lakeCtx.fill()}}
 function drawRipples(now){for(let i=lakeRipples.length-1;i>=0;i--){const r=lakeRipples[i],p=(now-r.born)/r.life;if(p>=1){lakeRipples.splice(i,1);continue}for(let ring=0;ring<2;ring++){const q=p-ring*.13;if(q<=0)continue;const radius=r.max*q;lakeCtx.beginPath();lakeCtx.ellipse(r.x,r.y,radius,radius*.24,0,0,Math.PI*2);lakeCtx.strokeStyle=`rgba(255,236,205,${(1-p)*(.19-ring*.05)})`;lakeCtx.lineWidth=.8;lakeCtx.shadowBlur=4;lakeCtx.shadowColor="rgba(255,225,185,.18)";lakeCtx.stroke()}}}
 function animateLake(now){const lakeGap=window.innerWidth<=700?33:16;if(now-lastLakeFrame<lakeGap){requestAnimationFrame(animateLake);return}lastLakeFrame=now;lakeCtx.clearRect(0,0,lakeW,lakeH);if(!background.complete||!background.naturalWidth){requestAnimationFrame(animateLake);return}const layout=lakeLayout(),t=now/1000;lakeCtx.save();traceLake(layout);lakeCtx.clip();const top=layout.offsetY+772*layout.scale,bottom=layout.offsetY+978*layout.scale,strip=Math.max(2,Math.round(3*layout.scale));for(let y=top;y<bottom;y+=strip){const depth=(y-top)/Math.max(1,bottom-top),shift=(Math.sin(t*.72+y*.021)*1.05+Math.sin(t*1.08-y*.013)*.48)*(.55+depth*.85);lakeCtx.save();lakeCtx.beginPath();lakeCtx.rect(0,y,lakeW,strip+1);lakeCtx.clip();lakeCtx.drawImage(background,layout.offsetX+shift,layout.offsetY,layout.renderedWidth,layout.renderedHeight);lakeCtx.restore()}lakeCtx.globalCompositeOperation="screen";for(let row=0;row<10;row++){const y=layout.offsetY+(825+row*14)*layout.scale;lakeCtx.beginPath();for(let x=layout.offsetX+600*layout.scale;x<lakeW;x+=12){const yy=y+Math.sin(x*.025+t*.85+row)*1.1;if(x===layout.offsetX+600*layout.scale)lakeCtx.moveTo(x,yy);else lakeCtx.lineTo(x,yy)}lakeCtx.strokeStyle=`rgba(255,235,202,${.016+Math.max(0,Math.sin(t+row))*.022})`;lakeCtx.lineWidth=.65;lakeCtx.stroke()}if(now>=nextDropAt){spawnDrop(now,layout);nextDropAt=now+6500+Math.random()*7500}drawDrops(now);drawRipples(now);lakeCtx.restore();requestAnimationFrame(animateLake)}
@@ -1778,13 +1749,15 @@ const canvas=document.querySelector("#sky");
 const ctx=canvas.getContext("2d",{alpha:true});
 const moonHalo=document.querySelector("#moon-halo");
 
+
+
 let width=0;
 let height=0;
 let dpr=1;
 let last=performance.now();
 let nextMeteor=14+Math.random()*26;
 let nextDustBurst=2+Math.random()*4;
-let nextSecretAt=performance.now()+20000+Math.random()*20000;
+let nextSecretAt=performance.now()+23000+Math.random()*25000;
 
 const stars=[];
 const meteors=[];
@@ -1943,6 +1916,40 @@ class Meteor{
     }
 }
 
+let moonHoldTimer=null;
+let moonShowerRunning=false;
+
+function startMeteorShower(){
+
+    if(moonShowerRunning) return;
+    moonShowerRunning=true;
+
+    const total=18;
+
+    for(let i=0;i<total;i++){
+
+        setTimeout(()=>{
+
+            const meteor=new Meteor();
+
+            meteor.x=rand(width*0.15,width*0.85);
+            meteor.y=rand(height*0.02,height*0.18);
+
+            meteor.speed=rand(700,1100);
+            meteor.length=rand(120,230);
+            meteor.angle=Math.PI/4+rand(-0.18,0.18);
+
+            meteors.push(meteor);
+
+        },i*110);
+
+    }
+
+    setTimeout(()=>{
+        moonShowerRunning=false;
+    },3200);
+}
+
 class DustParticle{
     constructor(){
         this.x=rand(width*.08,width*.92);
@@ -2010,25 +2017,96 @@ function spawnDustBurst(){
 function buildSecretConstellation(){
     secretStars.length=0;
 
-    const pattern=[
-        /* M */
-        [-64,-18],[-64,0],[-64,18],[-52,-8],[-40,-18],[-40,0],[-40,18],
+    const patterns=[
+        {
+            name:"M+L",
+            points:[
+                // M
+                [0,0],[0,1],[0,2],[0,3],[1,1],[2,0],[2,1],[2,2],[2,3],
 
-        /* + */
-        [-16,0],[-4,0],[8,0],[-4,-12],[-4,12],
+                // +
+                [4,1],[5,1],[6,1],[5,0],[5,2],
 
-        /* L */
-        [30,-18],[30,0],[30,18],[44,18],[58,18]
+                // L
+                [8,0],[8,1],[8,2],[8,3],[9,3],[10,3]
+            ]
+        },
+
+        {
+            name:"TE AMO",
+            points:[
+                // T
+                [0,0],[1,0],[2,0],[1,1],[1,2],[1,3],
+
+                // E
+                [4,0],[5,0],[6,0],[4,1],[4,2],[5,2],[6,2],[4,3],[5,3],[6,3],
+
+                // A
+                [8,1],[8,2],[8,3],[9,0],[10,1],[10,2],[10,3],[9,2],
+
+                // M
+                [12,0],[12,1],[12,2],[12,3],[13,1],[14,0],[14,1],[14,2],[14,3],
+
+                // O
+                [16,1],[16,2],[17,0],[17,3],[18,1],[18,2]
+            ]
+        },
+
+        {
+            name:"heart",
+            points:[
+                [1,0],[2,0],[4,0],[5,0],
+                [0,1],[3,1],[6,1],
+                [0,2],[6,2],
+                [1,3],[5,3],
+                [2,4],[4,4],
+                [3,5]
+            ]
+        }
     ];
 
-    const centerX=width*.72;
-    const centerY=height*.22;
+    const chosen=
+        patterns[Math.floor(Math.random()*patterns.length)];
 
-    pattern.forEach(([x,y],index)=>{
+    const spacing=
+        chosen.name==="TE AMO"
+            ?7
+            :chosen.name==="heart"
+                ?11
+                :9;
+
+    const patternWidth=
+        Math.max(...chosen.points.map(point=>point[0]))*
+        spacing;
+
+    const patternHeight=
+        Math.max(...chosen.points.map(point=>point[1]))*
+        spacing;
+
+    /*
+     * Random position inside the upper sky only.
+     * Avoids the tree, grass and lake.
+     */
+    const safeLeft=width*.42;
+    const safeRight=width*.88-patternWidth;
+    const safeTop=height*.07;
+    const safeBottom=height*.31-patternHeight;
+
+    const centerX=rand(
+        safeLeft,
+        Math.max(safeLeft,safeRight)
+    );
+
+    const centerY=rand(
+        safeTop,
+        Math.max(safeTop,safeBottom)
+    );
+
+    chosen.points.forEach(([column,row],index)=>{
         secretStars.push({
-            x:centerX+x,
-            y:centerY+y,
-            delay:index*.055
+            x:centerX+column*spacing,
+            y:centerY+row*spacing,
+            delay:index*.045
         });
     });
 }
@@ -2043,7 +2121,7 @@ function drawSecretConstellation(now){
 
     if(elapsed>=duration){
         secretStars.length=0;
-        nextSecretAt=now+20000+Math.random()*20000;
+        nextSecretAt=now+25000+Math.random()*26000;
         return;
     }
 
@@ -2846,6 +2924,572 @@ if(backgroundMusic&&musicButton){
         },
         {once:true}
     );
+
+})();
+
+/* =========================================================
+   REMOVE BASS-REACTIVE STARS
+   + MAKE THE SKY TWINKLE MAGICALLY ON ITS OWN
+========================================================= */
+
+(function(){
+
+    /* Completely disable beat-based sky flashing */
+    stopBeatAnimation();
+
+    startBeatAnimation=function(){
+        document.body.classList.remove("beat-pulse");
+    };
+
+    document.body.classList.remove("beat-pulse");
+
+    /* Prevent any leftover beat class from changing the sky */
+    const style=document.createElement("style");
+
+    style.textContent=`
+        body.beat-pulse #sky{
+            filter:
+                brightness(1.55)
+                drop-shadow(0 0 3px rgba(255,255,255,.38))
+                !important;
+        }
+
+        body.beat-pulse #memory-aura{
+            opacity:0 !important;
+            transform:scale(.92) !important;
+        }
+    `;
+
+    document.head.appendChild(style);
+
+
+    /* Give every star its own independent magical timing */
+    function prepareMagicalStar(star){
+        if(star.magicalPrepared){
+            return;
+        }
+
+        star.magicalPrepared=true;
+
+        star.magicPhase=Math.random()*Math.PI*2;
+        star.magicPhaseTwo=Math.random()*Math.PI*2;
+
+        star.magicSpeed=.35+Math.random()*1.15;
+        star.magicSpeedTwo=.10+Math.random()*.32;
+
+        /*
+         * Only some stars create stronger sparkles.
+         * This keeps the sky magical without making it chaotic.
+         */
+        star.magicStrength=
+            star.layer===2
+                ?.32+Math.random()*.30
+                :star.layer===1
+                    ?.12+Math.random()*.16
+                    :.035+Math.random()*.06;
+
+        star.nextFlash=
+            performance.now()+
+            15000+
+            Math.random()*30000;
+
+        star.flashStarted=0;
+        star.flashLength=
+            500+
+            Math.random()*850;
+    }
+
+
+    /*
+     * Replace only the way stars are drawn.
+     * Their positions, shooting stars and M+L system stay untouched.
+     */
+    Star.prototype.draw=function(t){
+
+        prepareMagicalStar(this);
+
+        const now=performance.now();
+        const memoryOpen=
+            document.body.classList.contains("memory-open");
+
+        if(now>=this.nextFlash){
+            this.flashStarted=now;
+            this.flashLength=
+                500+
+                Math.random()*900;
+
+            this.nextFlash=
+                now+
+                24000+
+                Math.random()*36000;
+        }
+
+        let flash=0;
+
+        if(
+            this.flashStarted &&
+            now-this.flashStarted<this.flashLength
+        ){
+            const progress=
+                (now-this.flashStarted)/
+                this.flashLength;
+
+            flash=
+                Math.sin(progress*Math.PI)*
+                this.magicStrength;
+        }
+
+        const slowTwinkle=
+            Math.sin(
+                t*this.magicSpeedTwo+
+                this.magicPhaseTwo
+            )*
+            this.range*
+            1.15;
+
+        const quickerTwinkle=
+            Math.sin(
+                t*this.magicSpeed+
+                this.magicPhase
+            )*
+            (
+                this.layer===2
+                    ?.09
+                    :this.layer===1
+                        ?.025
+                        :.006
+            );
+
+        const shimmer=
+            Math.max(
+                0,
+                Math.sin(
+                    t*
+                    (
+                        1.3+
+                        this.layer*.55
+                    )+
+                    this.phase*1.7
+                )
+            )*
+            (
+                this.layer===2
+                    ?.09
+                    :this.layer===1
+                        ?.025
+                        :.006
+            );
+
+        const alphaBoost=
+            memoryOpen
+                ?1.18
+                :1;
+
+        const alpha=Math.min(
+            .98,
+            Math.max(
+                .015,
+                (
+                    this.base+
+                    slowTwinkle+
+                    quickerTwinkle+
+                    shimmer+
+                    flash
+                )*
+                alphaBoost
+            )
+        );
+
+        const driftX=
+            Math.sin(
+                t*.045+
+                this.phase
+            )*
+            this.drift;
+
+        const driftY=
+            Math.cos(
+                t*.038+
+                this.phase
+            )*
+            this.drift*
+            .45;
+
+        const pulse=
+            1+
+            shimmer*
+            (
+                this.layer===2
+                    ?1.15
+                    :.55
+            )+
+            flash*
+            .72;
+
+        const drawX=this.x+driftX;
+        const drawY=this.y+driftY;
+        const radius=this.r*pulse;
+
+        ctx.save();
+
+        ctx.beginPath();
+
+        ctx.fillStyle=
+            `rgba(${this.tint},${alpha})`;
+
+        ctx.shadowBlur=
+            this.layer===2
+                ?8+alpha*22
+                :this.layer===1
+                    ?4+alpha*11
+                    :2+alpha*5;
+
+        ctx.shadowColor=
+            `rgba(${this.tint},.88)`;
+
+        ctx.arc(
+            drawX,
+            drawY,
+            radius,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+
+        /*
+         * Bright stars occasionally form a soft four-point sparkle.
+         */
+        if(
+            this.layer===2 &&
+            (
+                alpha>.30 ||
+                flash>.5
+            )
+        ){
+            const ray=
+                this.r*
+                (
+                    3.5+
+                    alpha*5+
+                    flash*8
+                );
+
+            ctx.globalAlpha=
+                Math.min(
+                    .42,
+                    alpha*.36+
+                    flash*.48
+                );
+
+            ctx.strokeStyle=
+                `rgba(${this.tint},.92)`;
+
+            ctx.lineWidth=.55;
+
+            ctx.beginPath();
+
+            ctx.moveTo(drawX-ray,drawY);
+            ctx.lineTo(drawX+ray,drawY);
+
+            ctx.moveTo(drawX,drawY-ray);
+            ctx.lineTo(drawX,drawY+ray);
+
+            ctx.stroke();
+
+
+            /*
+             * Tiny diagonal rays make rare flashes feel more magical.
+             */
+            if(flash>.30){
+                const diagonal=ray*.58;
+
+                ctx.globalAlpha=
+                    Math.min(.25,flash*.55);
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    drawX-diagonal,
+                    drawY-diagonal
+                );
+
+                ctx.lineTo(
+                    drawX+diagonal,
+                    drawY+diagonal
+                );
+
+                ctx.moveTo(
+                    drawX+diagonal,
+                    drawY-diagonal
+                );
+
+                ctx.lineTo(
+                    drawX-diagonal,
+                    drawY+diagonal
+                );
+
+                ctx.stroke();
+            }
+        }
+
+        ctx.restore();
+    };
+
+
+    /* Prepare the stars already on screen */
+    stars.forEach(prepareMagicalStar);
+
+})();
+
+
+/* =========================================================
+   HOLD THE MOON — METEOR SHOWER
+   Uses the existing Meteor class and canvas
+========================================================= */
+
+(function(){
+
+    if(
+        typeof Meteor!=="function" ||
+        !Array.isArray(meteors) ||
+        !moonHalo ||
+        !scene
+    ){
+        console.error("Moon shower could not initialize.");
+        return;
+    }
+
+    /* Separate invisible button over the actual moon */
+    const moonHoldButton=document.createElement("button");
+
+    moonHoldButton.type="button";
+    moonHoldButton.setAttribute(
+        "aria-label",
+        "Mantén presionada la luna"
+    );
+
+    Object.assign(moonHoldButton.style,{
+        position:"absolute",
+        zIndex:"70",
+        width:"76px",
+        height:"76px",
+        padding:"0",
+        margin:"0",
+        border:"0",
+        borderRadius:"50%",
+        background:"transparent",
+        appearance:"none",
+        WebkitAppearance:"none",
+        cursor:"pointer",
+        touchAction:"none",
+        userSelect:"none",
+        WebkitUserSelect:"none",
+        WebkitTouchCallout:"none"
+    });
+
+    scene.appendChild(moonHoldButton);
+
+    let holdTimer=null;
+    let showerRunning=false;
+    let holdSucceeded=false;
+
+    function positionMoonHoldButton(){
+        const moonRect=moonHalo.getBoundingClientRect();
+        const sceneRect=scene.getBoundingClientRect();
+        const size=76;
+
+        moonHoldButton.style.left=
+            `${moonRect.left-sceneRect.left+
+            moonRect.width/2-size/2}px`;
+
+        moonHoldButton.style.top=
+            `${moonRect.top-sceneRect.top+
+            moonRect.height/2-size/2}px`;
+    }
+
+    function launchMeteorShower(){
+        if(
+            showerRunning ||
+            activeState ||
+            isTransitioning
+        ){
+            return;
+        }
+
+        showerRunning=true;
+        holdSucceeded=true;
+
+        /* Moon softly reacts */
+        moonHalo.animate(
+            [
+                {
+                    transform:
+                        "translate(-50%,-50%) scale(1)",
+                    opacity:.48
+                },
+                {
+                    transform:
+                        "translate(-50%,-50%) scale(1.13)",
+                    opacity:.82
+                },
+                {
+                    transform:
+                        "translate(-50%,-50%) scale(1)",
+                    opacity:.48
+                }
+            ],
+            {
+                duration:1400,
+                easing:"ease-in-out"
+            }
+        );
+
+        /* Staggered shower using your existing canvas meteors */
+        const total=20;
+
+        for(let index=0;index<total;index+=1){
+            window.setTimeout(()=>{
+
+                const meteor=new Meteor();
+
+                meteor.x=rand(
+                    width*.03,
+                    width*.72
+                );
+
+                meteor.y=rand(
+                    height*.015,
+                    height*.25
+                );
+
+                meteor.angle=
+                    Math.PI/4+
+                    rand(-.13,.11);
+
+                meteor.speed=rand(620,980);
+                meteor.length=rand(75,180);
+                meteor.life=rand(.85,1.35);
+
+                /* A few larger centerpiece meteors */
+                if(index===7 || index===14){
+                    meteor.speed=rand(760,1050);
+                    meteor.length=rand(190,270);
+                    meteor.life=rand(1.05,1.45);
+                }
+
+                meteors.push(meteor);
+
+            },index*145+Math.random()*110);
+        }
+
+        window.setTimeout(()=>{
+            showerRunning=false;
+        },4400);
+    }
+
+    function beginMoonHold(event){
+        if(
+            showerRunning ||
+            activeState ||
+            isTransitioning
+        ){
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        holdSucceeded=false;
+        clearTimeout(holdTimer);
+
+        moonHoldButton.setPointerCapture?.(
+            event.pointerId
+        );
+
+        holdTimer=window.setTimeout(
+            launchMeteorShower,
+            1200
+        );
+    }
+
+    function cancelMoonHold(event){
+        clearTimeout(holdTimer);
+        holdTimer=null;
+
+        if(event){
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+    moonHoldButton.addEventListener(
+        "pointerdown",
+        beginMoonHold
+    );
+
+    moonHoldButton.addEventListener(
+        "pointerup",
+        cancelMoonHold
+    );
+
+    moonHoldButton.addEventListener(
+        "pointercancel",
+        cancelMoonHold
+    );
+
+    moonHoldButton.addEventListener(
+        "lostpointercapture",
+        cancelMoonHold
+    );
+
+    moonHoldButton.addEventListener(
+        "click",
+        event=>{
+            event.preventDefault();
+            event.stopPropagation();
+
+            if(holdSucceeded){
+                holdSucceeded=false;
+            }
+        }
+    );
+
+    moonHoldButton.addEventListener(
+        "contextmenu",
+        event=>event.preventDefault()
+    );
+
+    window.addEventListener(
+        "resize",
+        positionMoonHoldButton
+    );
+
+    window.addEventListener(
+        "orientationchange",
+        ()=>{
+            window.setTimeout(
+                positionMoonHoldButton,
+                300
+            );
+        }
+    );
+
+    if(window.visualViewport){
+        window.visualViewport.addEventListener(
+            "resize",
+            positionMoonHoldButton
+        );
+    }
+
+    positionMoonHoldButton();
+
+    /* Reposition once the page finishes settling */
+    window.setTimeout(
+        positionMoonHoldButton,
+        500
+    );
 
 })();
 
