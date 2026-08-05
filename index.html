@@ -2531,6 +2531,296 @@ if(backgroundMusic&&musicButton){
     positionMusicButton();
     positionLetterButton();
 }
+
+/* ---------- Music Button Hint ---------- */
+
+(function(){
+
+    const hint=document.createElement("span");
+
+    hint.className="music-hint";
+    hint.innerHTML="♫";
+
+    musicButton.appendChild(hint);
+
+    const style=document.createElement("style");
+
+    style.textContent=`
+    .music-hint{
+        position:absolute;
+        right:17px;
+        top:-20px;
+
+        pointer-events:none;
+
+        color:rgba(255,236,205,.88);
+        font-size:18px;
+        line-height:1;
+
+        text-shadow:
+            0 0 8px rgba(255,225,180,.45),
+            0 2px 6px rgba(0,0,0,.85);
+
+        animation:musicHintFloat 2.7s ease-in-out infinite;
+    }
+
+    @keyframes musicHintFloat{
+        0%,100%{
+            transform:translateY(0) rotate(-12deg);
+            opacity:.45;
+        }
+
+        50%{
+            transform:translateY(-5px) rotate(-12deg);
+            opacity:1;
+        }
+    }
+
+    .music-hint.hide{
+        animation:none;
+        opacity:0;
+        transition:opacity .45s ease;
+    }
+    `;
+
+    document.head.appendChild(style);
+
+    musicButton.addEventListener("click",()=>{
+        hint.classList.add("hide");
+
+        setTimeout(()=>{
+            hint.remove();
+        },450);
+
+    },{once:true});
+
+})();
+
+/* =========================================================
+   Magical moon sparkle guide to the music heart
+   Starts within 3 seconds and loops until the heart is clicked
+========================================================= */
+
+(function(){
+
+    let guideStopped=false;
+    let guideTimer=null;
+
+    function createMagicDot(size,opacity){
+        const dot=document.createElement("span");
+
+        Object.assign(dot.style,{
+            position:"fixed",
+            width:`${size}px`,
+            height:`${size}px`,
+            borderRadius:"50%",
+            pointerEvents:"none",
+            zIndex:"9999",
+            opacity:String(opacity),
+            background:"rgba(255,250,225,.98)",
+            boxShadow:`
+                0 0 7px rgba(255,255,255,.95),
+                0 0 15px rgba(255,235,185,.80),
+                0 0 28px rgba(255,215,145,.48)
+            `
+        });
+
+        document.body.appendChild(dot);
+        return dot;
+    }
+
+    function launchMagicalGuide(){
+        if(
+            guideStopped ||
+            !moonHalo ||
+            !musicButton ||
+            document.body.classList.contains("memory-open")
+        ){
+            scheduleNextGuide();
+            return;
+        }
+
+        const moon=moonHalo.getBoundingClientRect();
+        const heart=musicButton.getBoundingClientRect();
+
+        const startX=moon.left+moon.width*.48;
+        const startY=moon.top+moon.height*.54;
+
+        const endX=heart.left+heart.width*.5;
+        const endY=heart.top+heart.height*.45;
+
+        const mainSparkle=createMagicDot(8,0);
+
+        mainSparkle.style.left=`${startX}px`;
+        mainSparkle.style.top=`${startY}px`;
+
+        const dx=endX-startX;
+        const dy=endY-startY;
+
+        /*
+         * Curved path with two slow magical loops before
+         * landing on the heart.
+         */
+        const animation=mainSparkle.animate(
+            [
+                {
+                    transform:"translate(0,0) scale(.25)",
+                    opacity:0
+                },
+                {
+                    offset:.10,
+                    transform:"translate(0,0) scale(1.25)",
+                    opacity:1
+                },
+                {
+                    offset:.28,
+                    transform:
+                        `translate(${dx*.22}px,${dy*.18-55}px) `+
+                        `rotate(150deg) scale(1)`
+                },
+                {
+                    offset:.46,
+                    transform:
+                        `translate(${dx*.46+42}px,${dy*.40-18}px) `+
+                        `rotate(330deg) scale(.88)`
+                },
+                {
+                    offset:.64,
+                    transform:
+                        `translate(${dx*.66-38}px,${dy*.62+32}px) `+
+                        `rotate(540deg) scale(1.05)`
+                },
+                {
+                    offset:.82,
+                    transform:
+                        `translate(${dx*.84+18}px,${dy*.82-20}px) `+
+                        `rotate(720deg) scale(.82)`
+                },
+                {
+                    transform:
+                        `translate(${dx}px,${dy}px) `+
+                        `rotate(900deg) scale(.20)`,
+                    opacity:0
+                }
+            ],
+            {
+                duration:5200,
+                easing:"cubic-bezier(.42,0,.25,1)",
+                fill:"forwards"
+            }
+        );
+
+        /*
+         * Small trailing sparkles make the path feel magical.
+         */
+        const trailInterval=window.setInterval(()=>{
+            if(!mainSparkle.isConnected){
+                window.clearInterval(trailInterval);
+                return;
+            }
+
+            const rect=mainSparkle.getBoundingClientRect();
+            const trail=createMagicDot(
+                2+Math.random()*3,
+                .55+Math.random()*.35
+            );
+
+            trail.style.left=`${rect.left+Math.random()*8-4}px`;
+            trail.style.top=`${rect.top+Math.random()*8-4}px`;
+
+            const driftX=-12+Math.random()*24;
+            const driftY=-14+Math.random()*20;
+
+            trail.animate(
+                [
+                    {
+                        transform:"scale(1)",
+                        opacity:.8
+                    },
+                    {
+                        transform:
+                            `translate(${driftX}px,${driftY}px) scale(0)`,
+                        opacity:0
+                    }
+                ],
+                {
+                    duration:850+Math.random()*500,
+                    easing:"ease-out",
+                    fill:"forwards"
+                }
+            ).finished.finally(()=>{
+                trail.remove();
+            });
+
+        },120);
+
+        animation.finished.finally(()=>{
+            window.clearInterval(trailInterval);
+            mainSparkle.remove();
+
+            if(!guideStopped){
+                musicButton.animate(
+                    [
+                        {
+                            transform:"scale(1)"
+                        },
+                        {
+                            transform:"scale(1.18)",
+                            offset:.42
+                        },
+                        {
+                            transform:"scale(1)"
+                        }
+                    ],
+                    {
+                        duration:900,
+                        easing:"ease-in-out"
+                    }
+                );
+            }
+
+            scheduleNextGuide();
+        });
+    }
+
+    function scheduleNextGuide(){
+        if(guideStopped){
+            return;
+        }
+
+        window.clearTimeout(guideTimer);
+
+        guideTimer=window.setTimeout(
+            launchMagicalGuide,
+            9000
+        );
+    }
+
+    /*
+     * First guide begins after 2.5 seconds.
+     */
+    window.addEventListener("load",()=>{
+        guideTimer=window.setTimeout(
+            launchMagicalGuide,
+            2500
+        );
+    });
+
+    /*
+     * Stop the guide permanently after the music heart is clicked.
+     */
+    musicButton.addEventListener(
+        "click",
+        ()=>{
+            guideStopped=true;
+            window.clearTimeout(guideTimer);
+        },
+        {once:true}
+    );
+
+})();
+
+
 </script>
 </body>
 </html>
