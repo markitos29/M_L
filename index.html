@@ -986,13 +986,14 @@ function positionLetterButton(){
     const phone=isPhoneLayout();
     const size=phone ? 34 : 32;
 
-    const centerX=
-        layout.offsetX+
-        LETTER_BUTTON_X*layout.scale;
+let centerX = layout.offsetX + LETTER_BUTTON_X * layout.scale;
+let centerY = layout.offsetY + LETTER_BUTTON_Y * layout.scale;
 
-    const centerY=
-        layout.offsetY+
-        LETTER_BUTTON_Y*layout.scale;
+// Desktop-only adjustment
+if (!isMobile) {
+    centerX += 22;   // move right
+    centerY -= 10;    // move slightly up
+}
 
     letterButton.style.width=`${size}px`;
     letterButton.style.height=`${size}px`;
