@@ -112,7 +112,7 @@ body.memory-breath #lake-waves{
 #memory-aura{position:absolute;inset:-20%;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 42%,rgba(255,244,210,.18),rgba(255,229,182,.08) 28%,transparent 62%);filter:blur(28px);transform:scale(.92);transition:opacity 1.1s ease,transform 1.1s ease}
 #polaroid-layer{position:absolute;inset:0;z-index:3;pointer-events:none}
 .polaroid{position:absolute;border:0;padding:0;background:transparent;cursor:pointer;pointer-events:auto;transform-origin:50% 0%;will-change:transform;appearance:none;-webkit-appearance:none}
-.polaroid-card{position:absolute;inset:0;display:block;overflow:hidden;padding:3px 3px 10px;background:#e8dfcf;border:1px solid rgba(214,199,174,.95);outline:1px solid rgba(255,239,211,.18);outline-offset:-1px;box-shadow:
+.polaroid-card{position:absolute;inset:0;display:block;overflow:hidden;padding:5.5px 5.5px 13px;background:#e8dfcf;border:1px solid rgba(214,199,174,.95);outline:1px solid rgba(255,239,211,.18);outline-offset:-1px;box-shadow:
 0 0 8px rgba(255,240,210,.40),
 0 0 18px rgba(255,220,170,.28),
 0 6px 14px rgba(0,0,0,.48);transition:box-shadow .35s ease,filter .35s ease,transform .35s ease,opacity .35s ease}
@@ -121,7 +121,7 @@ display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;backgr
 @media (hover:none) and (pointer:coarse){
 
     .polaroid-media{
-        transform:scale(3.7);
+        transform:scale(3.8);
         transform-origin:center;
     }
 
@@ -937,7 +937,7 @@ function positionPolaroids(){
     const layout=getLayout();
     const phone=isPhoneLayout();
 
-const POLAROID_SCALE=phone ? 0.42 : 0.45;
+const POLAROID_SCALE=phone ? 0.50 : 0.45;
 
     for(const state of polaroids){
         const m=state.memory;
@@ -973,7 +973,7 @@ function positionMusicButton(){
 
     const layout=getArtworkLayout();
     const phone=isPhoneLayout();
-    const size=phone ? 60 : 70;
+    const size=phone ? 50 : 60;
 
     const centerX=
         layout.offsetX+
